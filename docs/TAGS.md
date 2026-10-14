@@ -42,24 +42,26 @@ Old `GF360_*` field **labels** are marked legacy/unused. Do not build new GHL br
 
 ## Next.js webhook intakes
 
-All live. `POST https://360growth.io/webhook/gc-{slug}` (or via Grant Circuit `POST /api/forms/{slug}`).
+All live in n8n project **NPE-Non Profits Elevate** (`eNaNUhYFo3d2eEOK`). Every path ends in `-npe`.
+`POST https://360growth.io/webhook/{n8nPath}` (or via Grant Circuit `POST /api/forms/{slug}`).
 
-| Slug | n8n workflow |
-| --- | --- |
-| `grant-rfp` | `9WEMrW8Lj87OYyR3` |
-| `grant-applicant-submit` | `Gx2VBLd2BxxYdEVw` |
-| `grant-management-requirements` | `vUaZhBe4zJBEzDeh` |
-| `submit-expense` | `Hec6BmL7DGJBAFBL` |
-| `review-expense` | `5MEAz4NFb4TvI7Fr` |
-| `bookkeeper-pay` | `GiIDYzTohJAGBXhs` |
-| `apply-extension` | `az7zrq2ONfWwnSQt` |
-| `grant-progress-report` | `NPTTLmsODsYaOU2X` |
-| `grant-funder-auto-review` | `hRRpt8HOdd4clrD4` |
-| `grant-mark-awarded` | `h60rZ2n8Zv43D1CN` |
-| `vendor-application` | `8eIwWbSg9mnRYcHu` |
-| `org-registration` | `1NLAgVVRrslyZ3VM` |
-| `org-activate` | `HpfPuazTY4kLn9zD` |
-| `project-status` | `4HJwIw8BTxbdI1fo` |
-| `vendor-review` | `9Lw5lo6001u21Ip7` |
-| `vendor-w9` | `dIjLw64zw8niIbDa` |
-| `project-registration` | `MZm543MsH18KUOIA` |
+| Slug | n8n path | n8n workflow ID |
+| --- | --- | --- |
+| `grant-rfp` | `gc-grant-rfp-npe` | `9WEMrW8Lj87OYyR3` |
+| `grant-applicant-submit` | `gc-grant-applicant-submit-npe` | `W3bGDM1kSA0BkoP2` |
+| `grant-management-requirements` | `gc-grant-management-requirements-npe` | `zJHBRN4SzeRm24pD` |
+| `grant-funder-auto-review` | `gc-grant-funder-auto-review-npe` | `9ybCALaJwDDbFXUQ` |
+| `grant-mark-awarded` | `gc-grant-mark-awarded-npe` | `LU0Xghc1rYhc3sVG` |
+| `submit-expense` | `gc-submit-expense-npe` | `VzotZ2CACu7FQwNT` |
+| `review-expense` | `gc-review-expense-npe` | `4EREjimKg0YCMZ4D` |
+| `bookkeeper-pay` | `gc-bookkeeper-pay-npe` | `zlKhYzJFh82t7FOn` |
+| `apply-extension` | `gc-apply-extension-npe` | `cWXDkg6Amh16jow7` |
+| `extension-review` | `gc-extension-review-npe` | `lS4XtAobrCPnHp7f` |
+| `progress-report` | `gc-progress-report-npe` | `9pXnhhFMAquLD4NE` |
+| `vendor-application` | `gc-vendor-application-npe` | `jaEM2Go0y7n5Z3SU` |
+| `vendor-review` | `gc-vendor-review-npe` | `oPHhCMZQa16fRaMK` |
+| `vendor-w9` | `gc-vendor-w9-npe` | `YBcTnBgM3S9EwVzX` |
+| `org-registration` | `gc-org-registration-npe` | `3pnm5LahmBu2I0NQ` |
+| `org-activate` | `gc-org-activate-npe` | `jyUoFNp0m1Fdytf5` |
+| `project-registration` | `gc-project-registration-npe` | `1K19F8MJ3dTZoYD4` |
+| `project-status` | `gc-project-status-npe` | `J6TIwC21r3tP8kEM` |

@@ -36,7 +36,7 @@ export const FORMS: FormDef[] = [
     title: "Grant Application",
     subtitle: "For funding organizations",
     audience: "funder",
-    n8nPath: "gf360-grant-rfp",
+    n8nPath: "gc-grant-rfp-npe",
     webhookEnv: "N8N_GRANT_RFP_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -48,7 +48,7 @@ export const FORMS: FormDef[] = [
     title: "Grant Application",
     subtitle: "For applicants",
     audience: "applicant",
-    n8nPath: "gf360-grant-applicant-submit",
+    n8nPath: "gc-grant-applicant-submit-npe",
     webhookEnv: "N8N_GRANT_APPLICANT_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -60,7 +60,7 @@ export const FORMS: FormDef[] = [
     title: "Grant Allocation",
     subtitle: "Award amount and grant period",
     audience: "staff",
-    n8nPath: "gf360-grant-management-requirements",
+    n8nPath: "gc-grant-management-requirements-npe",
     webhookEnv: "N8N_GRANT_ALLOCATION_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -72,7 +72,7 @@ export const FORMS: FormDef[] = [
     title: "Funder Auto Review",
     subtitle: "Select applicants for this grant",
     audience: "funder",
-    n8nPath: "gf360-grant-funder-auto-review",
+    n8nPath: "gc-grant-funder-auto-review-npe",
     webhookEnv: "N8N_GRANT_AUTO_REVIEW_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -84,7 +84,7 @@ export const FORMS: FormDef[] = [
     title: "Forward to Funder Review",
     subtitle: "Send this application for allocation",
     audience: "staff",
-    n8nPath: "gf360-grant-mark-awarded",
+    n8nPath: "gc-grant-mark-awarded-npe",
     webhookEnv: "N8N_GRANT_MARK_AWARDED_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -96,7 +96,7 @@ export const FORMS: FormDef[] = [
     title: "Submit Expense",
     subtitle: "Request payment against an awarded grant",
     audience: "applicant",
-    n8nPath: "gf360-submit-expense",
+    n8nPath: "gc-submit-expense-npe",
     webhookEnv: "N8N_EXPENSE_SUBMIT_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -108,7 +108,7 @@ export const FORMS: FormDef[] = [
     title: "Review Expense",
     subtitle: "Approve, reject, or request changes",
     audience: "staff",
-    n8nPath: "gf360-review-expense",
+    n8nPath: "gc-review-expense-npe",
     webhookEnv: "N8N_EXPENSE_REVIEW_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -120,7 +120,7 @@ export const FORMS: FormDef[] = [
     title: "Record Payment",
     subtitle: "Record how this expense was paid",
     audience: "staff",
-    n8nPath: "gf360-bookkeeper-pay",
+    n8nPath: "gc-bookkeeper-pay-npe",
     webhookEnv: "N8N_BOOKKEEPER_PAY_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -132,7 +132,7 @@ export const FORMS: FormDef[] = [
     title: "Apply for Extension",
     subtitle: "Request a longer grant period",
     audience: "applicant",
-    n8nPath: "gf360-apply-extension",
+    n8nPath: "gc-apply-extension-npe",
     webhookEnv: "N8N_EXTENSION_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -144,7 +144,8 @@ export const FORMS: FormDef[] = [
     title: "Review Extension Request",
     subtitle: "Approve or deny a grant period extension",
     audience: "staff",
-    n8nPath: "gf360-extension-review",
+    n8nPath: "gc-extension-review-npe",
+    webhookEnv: "N8N_EXTENSION_REVIEW_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
       { id: 2, label: "Decision" },
@@ -155,7 +156,7 @@ export const FORMS: FormDef[] = [
     title: "Progress Report",
     subtitle: "Submit a grant progress report",
     audience: "applicant",
-    n8nPath: "gf360-grant-progress-report",
+    n8nPath: "gc-progress-report-npe",
     webhookEnv: "N8N_PROGRESS_REPORT_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -167,7 +168,7 @@ export const FORMS: FormDef[] = [
     title: "Vendor Application",
     subtitle: "Apply to become a vendor",
     audience: "applicant",
-    n8nPath: "gf360-vendor-application",
+    n8nPath: "gc-vendor-application-npe",
     webhookEnv: "N8N_VENDOR_APPLICATION_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -179,7 +180,7 @@ export const FORMS: FormDef[] = [
     title: "Vendor Review",
     subtitle: "Approve, request W9, or close this vendor",
     audience: "staff",
-    n8nPath: "gf360-vendor-review",
+    n8nPath: "gc-vendor-review-npe",
     webhookEnv: "N8N_VENDOR_REVIEW_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -191,7 +192,7 @@ export const FORMS: FormDef[] = [
     title: "Vendor W9",
     subtitle: "Upload the requested W9",
     audience: "applicant",
-    n8nPath: "gf360-vendor-w9",
+    n8nPath: "gc-vendor-w9-npe",
     webhookEnv: "N8N_VENDOR_W9_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -203,7 +204,7 @@ export const FORMS: FormDef[] = [
     title: "Organization Registration",
     subtitle: "Register an organization",
     audience: "applicant",
-    n8nPath: "gf360-org-registration",
+    n8nPath: "gc-org-registration-npe",
     webhookEnv: "N8N_ORG_REGISTRATION_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -215,7 +216,7 @@ export const FORMS: FormDef[] = [
     title: "Activate Organization",
     subtitle: "Activate a registered organization",
     audience: "staff",
-    n8nPath: "gf360-org-activate",
+    n8nPath: "gc-org-activate-npe",
     webhookEnv: "N8N_ORG_ACTIVATE_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -227,7 +228,7 @@ export const FORMS: FormDef[] = [
     title: "Project Registration",
     subtitle: "Register a project",
     audience: "applicant",
-    n8nPath: "gf360-project-registration",
+    n8nPath: "gc-project-registration-npe",
     webhookEnv: "N8N_PROJECT_REGISTRATION_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -239,7 +240,7 @@ export const FORMS: FormDef[] = [
     title: "Project Status",
     subtitle: "Update project status",
     audience: "staff",
-    n8nPath: "gf360-project-status",
+    n8nPath: "gc-project-status-npe",
     webhookEnv: "N8N_PROJECT_STATUS_WEBHOOK_URL",
     steps: [
       { id: 1, label: "Your info" },
@@ -260,5 +261,5 @@ export function webhookUrl(form: FormDef): string {
     /\/+$/,
     ""
   )
-  return `${base}/webhook/gc-${form.slug}`
+  return `${base}/webhook/${form.n8nPath}`
 }

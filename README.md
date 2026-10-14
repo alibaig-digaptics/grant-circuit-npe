@@ -23,27 +23,28 @@ Standalone: `/forms/{slug}`
 Embed (iframe): `/embed/{slug}`  
 Prefill: `?contactId=&recordId=`
 
-| Slug | Replaces n8n path |
+| Slug | Live n8n webhook path |
 | --- | --- |
-| `grant-rfp` | `gf360-grant-rfp` |
-| `grant-applicant-submit` | `gf360-grant-applicant-submit` |
-| `grant-management-requirements` | `gf360-grant-management-requirements` |
-| `grant-funder-auto-review` | `gf360-grant-funder-auto-review` |
-| `grant-mark-awarded` | `gf360-grant-mark-awarded` |
-| `submit-expense` | `gf360-submit-expense` |
-| `review-expense` | `gf360-review-expense` |
-| `bookkeeper-pay` | `gf360-bookkeeper-pay` |
-| `apply-extension` | `gf360-apply-extension` |
-| `progress-report` | `gf360-grant-progress-report` |
-| `vendor-application` | `gf360-vendor-application` |
-| `vendor-review` | `gf360-vendor-review` |
-| `vendor-w9` | `gf360-vendor-w9` |
-| `org-registration` | `gf360-org-registration` |
-| `org-activate` | `gf360-org-activate` |
-| `project-registration` | `gf360-project-registration` |
-| `project-status` | `gf360-project-status` |
+| `grant-rfp` | `gc-grant-rfp-npe` |
+| `grant-applicant-submit` | `gc-grant-applicant-submit-npe` |
+| `grant-management-requirements` | `gc-grant-management-requirements-npe` |
+| `grant-funder-auto-review` | `gc-grant-funder-auto-review-npe` |
+| `grant-mark-awarded` | `gc-grant-mark-awarded-npe` |
+| `submit-expense` | `gc-submit-expense-npe` |
+| `review-expense` | `gc-review-expense-npe` |
+| `bookkeeper-pay` | `gc-bookkeeper-pay-npe` |
+| `apply-extension` | `gc-apply-extension-npe` |
+| `extension-review` | `gc-extension-review-npe` |
+| `progress-report` | `gc-progress-report-npe` |
+| `vendor-application` | `gc-vendor-application-npe` |
+| `vendor-review` | `gc-vendor-review-npe` |
+| `vendor-w9` | `gc-vendor-w9-npe` |
+| `org-registration` | `gc-org-registration-npe` |
+| `org-activate` | `gc-org-activate-npe` |
+| `project-registration` | `gc-project-registration-npe` |
+| `project-status` | `gc-project-status-npe` |
 
-`POST /api/forms/{slug}` forwards JSON to `{N8N_BASE_URL}/webhook/gc-{slug}` (Next.js intake on the live n8n workflow).
+`POST /api/forms/{slug}` forwards JSON to `{N8N_BASE_URL}/webhook/{n8nPath}` — the `gc-*-npe` path above (the `Next.js Intake` webhook on the live n8n workflow).
 
 ## Status
 
