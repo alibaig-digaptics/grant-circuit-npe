@@ -50,6 +50,7 @@ export async function POST(
       source: "grant-circuit",
       form: form.slug,
       n8nPath: form.n8nPath,
+      locationId: (body.locationId as string) || process.env.GF360_GHL_LOCATION_ID || "fwAgT5nunV4RIrV84OEh",
       submittedAt: new Date().toISOString(),
       notifyTag: tagForForm(form.slug, body as Record<string, unknown>),
       fieldKeys: SIMPLE_FIELDS,
