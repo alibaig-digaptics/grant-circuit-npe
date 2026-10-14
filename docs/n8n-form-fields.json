@@ -1,0 +1,2648 @@
+{
+  "generatedAt": "2026-09-21T23:46:33Z",
+  "instance": "https://360growth.io",
+  "workflows": [
+    {
+      "label": "Form A RFP",
+      "workflowId": "9WEMrW8Lj87OYyR3",
+      "workflowName": "23. GrantFlow 360 - Grant RFP Form (Form A)",
+      "active": true,
+      "formNodeCount": 3,
+      "totalFieldCount": 18,
+      "forms": [
+        {
+          "nodeName": "Grant RFP - Identity",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Grant Application",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "First Name",
+              "fieldName": "firstName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "fieldName": "lastName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldName": "email",
+              "fieldType": "email",
+              "required": true
+            },
+            {
+              "fieldLabel": "Phone",
+              "fieldName": "phone",
+              "fieldType": "",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 6
+        },
+        {
+          "nodeName": "Grant RFP - Details",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [
+            {
+              "fieldLabel": "Brand",
+              "fieldName": "brand",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "Grant Name",
+              "fieldName": "grantName",
+              "fieldType": "text",
+              "required": true
+            },
+            {
+              "fieldLabel": "Funder Organization",
+              "fieldName": "funderOrg",
+              "fieldType": "text",
+              "required": true
+            },
+            {
+              "fieldLabel": "Funder Contact Email",
+              "fieldName": "funderEmail",
+              "fieldType": "email",
+              "required": false
+            },
+            {
+              "fieldLabel": "Award Amount (Up To)",
+              "fieldName": "awardAmount",
+              "fieldType": "number",
+              "required": true
+            },
+            {
+              "fieldLabel": "How Many Awards",
+              "fieldName": "numberOfAwards",
+              "fieldType": "dropdown",
+              "required": true,
+              "options": [
+                "Undetermined",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "fieldLabel": "Application Review Process",
+              "fieldName": "reviewProcess",
+              "fieldType": "dropdown",
+              "required": true,
+              "options": [
+                "Reviewed by Internal Team",
+                "Reviewed by Third Party",
+                "Reviewed by GrantFlow Team"
+              ]
+            },
+            {
+              "fieldLabel": "Application Requirement Documents (multiple - e.g. LOR, CV)",
+              "fieldName": "requirementPdf",
+              "fieldType": "file",
+              "required": false
+            },
+            {
+              "fieldLabel": "Requirement Document URLs (optional, one per line)",
+              "fieldName": "requirementDocs",
+              "fieldType": "textarea",
+              "required": false
+            },
+            {
+              "fieldLabel": "Closing Checklist Documents (multiple)",
+              "fieldName": "closingChecklist",
+              "fieldType": "file",
+              "required": false
+            },
+            {
+              "fieldLabel": "Public summary for applicants",
+              "fieldName": "publicSummary",
+              "fieldType": "textarea",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 12
+        },
+        {
+          "nodeName": "Done - Submitted",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Form B applicant",
+      "workflowId": "Gx2VBLd2BxxYdEVw",
+      "workflowName": "24. GrantFlow 360 - Applicant Grant Submission (Form B)",
+      "active": true,
+      "formNodeCount": 3,
+      "totalFieldCount": 14,
+      "forms": [
+        {
+          "nodeName": "Applicant Form - Identity",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Grant Application",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "First Name",
+              "fieldName": "firstName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "fieldName": "lastName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldName": "email",
+              "fieldType": "email",
+              "required": true
+            },
+            {
+              "fieldLabel": "Phone",
+              "fieldName": "phone",
+              "fieldType": "",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "opportunityId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 8
+        },
+        {
+          "nodeName": "Applicant Form - Details",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Grant context",
+                "fieldName": "grantContext",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Applicant Organization",
+                "fieldName": "organization",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Proposal summary",
+                "fieldName": "proposalNotes",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Proposal documents (multiple)",
+                "fieldName": "proposalFiles",
+                "fieldType": "file"
+              },
+              {
+                "fieldLabel": "What do you want to do?",
+                "fieldName": "submitMode",
+                "fieldType": "dropdown"
+              }
+            ],
+            "notes": "dropdown options built in code; runtime-generated fields"
+          },
+          "fieldCount": 6
+        },
+        {
+          "nodeName": "Done - Submitted",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Form C allocation",
+      "workflowId": "vUaZhBe4zJBEzDeh",
+      "workflowName": "10. GrantFlow 360 - Grant Allocation Determination (Form C)",
+      "active": true,
+      "formNodeCount": 4,
+      "totalFieldCount": 34,
+      "forms": [
+        {
+          "nodeName": "Grant Form - Identity",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Grant Allocation Determination",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "First Name",
+              "fieldName": "firstName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "fieldName": "lastName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldName": "email",
+              "fieldType": "email",
+              "required": true
+            },
+            {
+              "fieldLabel": "Phone",
+              "fieldName": "phone",
+              "fieldType": "",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "opportunityId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 8
+        },
+        {
+          "nodeName": "Grant Form - Details",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Application package",
+                "fieldName": "summary",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Organization",
+                "fieldName": "organization",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Grant Name",
+                "fieldName": "grantName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Funder Name",
+                "fieldName": "funderName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Award Amount",
+                "fieldName": "awardAmount",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Start Date",
+                "fieldName": "startDate",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "End Date",
+                "fieldName": "endDate",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "Budget Categories",
+                "fieldName": "budgetCategories",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Notes (optional)",
+                "fieldName": "notes",
+                "fieldType": "textarea"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 10
+        },
+        {
+          "nodeName": "Done - Submitted",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Grant Form - Extra Fields",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand3",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Progress Report Cadence",
+                "fieldName": "progressReportCadence",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Progress Report Format (what to submit)",
+                "fieldName": "progressReportFormat",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Grant Number",
+                "fieldName": "grantNumber",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "CFDA Number",
+                "fieldName": "cfdaNumber",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Reporting Requirements",
+                "fieldName": "reportingRequirements",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Indirect Cost Rate (%)",
+                "fieldName": "indirectCostRate",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Cost Share Required?",
+                "fieldName": "costShareRequired",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Cost Share Amount",
+                "fieldName": "costShareAmount",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Allowable Costs",
+                "fieldName": "allowableCosts",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Unallowable Costs",
+                "fieldName": "unallowableCosts",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Carryover Allowed?",
+                "fieldName": "carryoverAllowed",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Carryover Limit",
+                "fieldName": "carryoverLimit",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Pre-Award Given?",
+                "fieldName": "preawardCosts",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Pre-Award Date",
+                "fieldName": "preawardDate",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "Closeout Deadline",
+                "fieldName": "closeoutDeadline",
+                "fieldType": "date"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 16
+        }
+      ]
+    },
+    {
+      "label": "Expense",
+      "workflowId": "Hec6BmL7DGJBAFBL",
+      "workflowName": "0. GrantFlow 360 - Expense Submit Form",
+      "active": true,
+      "formNodeCount": 3,
+      "totalFieldCount": 23,
+      "forms": [
+        {
+          "nodeName": "Expense Form - Identity",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Submit Expense",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "First Name",
+              "fieldName": "firstName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "fieldName": "lastName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldName": "email",
+              "fieldType": "email",
+              "required": true
+            },
+            {
+              "fieldLabel": "Phone",
+              "fieldName": "phone",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "By checking this box, I consent to receive non-marketing text messages from Grant Flow 360. Message frequency varies, message & data rates may apply. Text HELP for assistance, reply STOP to opt out.",
+              "fieldName": "smsConsent",
+              "fieldType": "checkbox",
+              "required": true,
+              "options": [
+                "I agree"
+              ]
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 7
+        },
+        {
+          "nodeName": "Expense Form - Details",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand2",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Project",
+                "fieldName": "project",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Funding Source",
+                "fieldName": "fundingSource",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Payee (Vendor)",
+                "fieldName": "vendor",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Budget Category",
+                "fieldName": "budgetCategory",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Amount",
+                "fieldName": "amount",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Description",
+                "fieldName": "description",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Needs Justification",
+                "fieldName": "businessPurpose",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Attendees (optional \u2014 events)",
+                "fieldName": "attendees",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Mileage (optional \u2014 travel)",
+                "fieldName": "mileage",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Reimbursement / For Future Payment",
+                "fieldName": "paymentKind",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Expense Date (if applicable \u2014 required for Reimbursement)",
+                "fieldName": "expenseDate",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "Reimburse To (fill only for Reimbursement)",
+                "fieldName": "reimbursedTo",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Notes (use this to explain Other category)",
+                "fieldName": "notes",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Receipt Upload",
+                "fieldName": "receipt",
+                "fieldType": "file"
+              },
+              {
+                "fieldLabel": "Quote / Proposal Upload",
+                "fieldName": "quoteProposal",
+                "fieldType": "file"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 16
+        },
+        {
+          "nodeName": "Submission Complete",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Reviewer",
+      "workflowId": "5MEAz4NFb4TvI7Fr",
+      "workflowName": "8. GrantFlow 360 - Reviewer Decision Form",
+      "active": true,
+      "formNodeCount": 8,
+      "totalFieldCount": 8,
+      "forms": [
+        {
+          "nodeName": "Reviewer Form - Open",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Expense Review",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 4
+        },
+        {
+          "nodeName": "Missing Link",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Expense Not Ready",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Reviewer Form - Decision",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Expense",
+                "fieldName": "expenseInfo",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Decision",
+                "fieldName": "decision",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Notes (required for Request Changes / Reject)",
+                "fieldName": "notes",
+                "fieldType": "textarea"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 4
+        },
+        {
+          "nodeName": "Done - Approved",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Done - Revision",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Done - Rejected",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Done - Fallback",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Bookkeeper",
+      "workflowId": "GiIDYzTohJAGBXhs",
+      "workflowName": "9. GrantFlow 360 - Bookkeeper Payment Form",
+      "active": true,
+      "formNodeCount": 7,
+      "totalFieldCount": 10,
+      "forms": [
+        {
+          "nodeName": "Bookkeeper Form - Open",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Record Payment",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 4
+        },
+        {
+          "nodeName": "Missing Link",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Expense Not Ready",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Bookkeeper Form - Payment",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Expense",
+                "fieldName": "expenseInfo",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Payment Method",
+                "fieldName": "paymentMethod",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Payment Date",
+                "fieldName": "paymentDate",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "Payment Reference",
+                "fieldName": "paymentRef",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Notes (optional)",
+                "fieldName": "notes",
+                "fieldType": "textarea"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 6
+        },
+        {
+          "nodeName": "Invalid Payment",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Done - Paid",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Done - QB Pending",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Extension",
+      "workflowId": "az7zrq2ONfWwnSQt",
+      "workflowName": "16. GrantFlow 360 - Apply for Extension",
+      "active": true,
+      "formNodeCount": 3,
+      "totalFieldCount": 11,
+      "forms": [
+        {
+          "nodeName": "Extension Form - Identity",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Apply for Extension",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "First Name",
+              "fieldName": "firstName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "fieldName": "lastName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldName": "email",
+              "fieldType": "email",
+              "required": true
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 7
+        },
+        {
+          "nodeName": "Extension Form - Details",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Grant",
+                "fieldName": "grantLabel",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Proposed new end date",
+                "fieldName": "requestedEndDate",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "Reason for extension",
+                "fieldName": "extensionReason",
+                "fieldType": "textarea"
+              }
+            ]
+          },
+          "fieldCount": 4
+        },
+        {
+          "nodeName": "Done - Submitted",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Progress",
+      "workflowId": "NPTTLmsODsYaOU2X",
+      "workflowName": "15. GrantFlow 360 - Progress Report Submit Form",
+      "active": true,
+      "formNodeCount": 5,
+      "totalFieldCount": 9,
+      "forms": [
+        {
+          "nodeName": "Award Form - Open",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Progress Report",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "opportunityId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 5
+        },
+        {
+          "nodeName": "Missing Award Link",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Award Not Ready",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Award Confirm Page",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Grant context",
+                "fieldName": "summary",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Progress report narrative",
+                "fieldName": "reportNarrative",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Report attachments (optional)",
+                "fieldName": "reportFiles",
+                "fieldType": "file"
+              }
+            ]
+          },
+          "fieldCount": 4
+        },
+        {
+          "nodeName": "Award Done",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Auto review",
+      "workflowId": "hRRpt8HOdd4clrD4",
+      "workflowName": "13b. GrantFlow 360 - Funder Auto-Submit Review Form",
+      "active": true,
+      "formNodeCount": 5,
+      "totalFieldCount": 12,
+      "forms": [
+        {
+          "nodeName": "Award Form - Open",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Funder Application Review",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "opportunityId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 5
+        },
+        {
+          "nodeName": "Missing Award Link",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Award Not Ready",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Award Confirm Page",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Application package",
+                "fieldName": "summary",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Award Amount",
+                "fieldName": "awardAmount",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Award Date",
+                "fieldName": "awardDate",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "Grant Number (optional)",
+                "fieldName": "grantNumber",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Award Letter URL (optional)",
+                "fieldName": "awardLetterUrl",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Grant Agreement URL (optional)",
+                "fieldName": "grantAgreementUrl",
+                "fieldType": "text"
+              }
+            ]
+          },
+          "fieldCount": 7
+        },
+        {
+          "nodeName": "Award Done",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Forward/mark awarded",
+      "workflowId": "h60rZ2n8Zv43D1CN",
+      "workflowName": "13. GrantFlow 360 - Forward to Funder Review",
+      "active": true,
+      "formNodeCount": 5,
+      "totalFieldCount": 8,
+      "forms": [
+        {
+          "nodeName": "Award Form - Open",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Forward to Funder Review",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "opportunityId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 5
+        },
+        {
+          "nodeName": "Missing Award Link",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Award Not Ready",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Award Confirm Page",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Application package",
+                "fieldName": "summary",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Staff notes (optional)",
+                "fieldName": "staffNotes",
+                "fieldType": "textarea"
+              }
+            ]
+          },
+          "fieldCount": 3
+        },
+        {
+          "nodeName": "Award Done",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Vendor application (live)",
+      "workflowId": "8eIwWbSg9mnRYcHu",
+      "workflowName": "15. GrantFlow 360 - Vendor Application Form",
+      "active": true,
+      "formNodeCount": 3,
+      "totalFieldCount": 28,
+      "forms": [
+        {
+          "nodeName": "Vendor Form - Identity",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Vendor Application",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "Your First Name",
+              "fieldName": "firstName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Your Last Name",
+              "fieldName": "lastName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Your Email",
+              "fieldName": "email",
+              "fieldType": "email",
+              "required": true
+            },
+            {
+              "fieldLabel": "Your Phone",
+              "fieldName": "phone",
+              "fieldType": "",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 6
+        },
+        {
+          "nodeName": "Vendor Form - Details",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Organization",
+                "fieldName": "organization",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Vendor Name",
+                "fieldName": "vendorName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Vendor Type",
+                "fieldName": "vendorType",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Certification (WOB / MBE / Veteran)",
+                "fieldName": "certificationChoice",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Officially certified?",
+                "fieldName": "certificationStatus",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Which certificate?",
+                "fieldName": "certificationName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Contact Person",
+                "fieldName": "contactPerson",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Vendor Email",
+                "fieldName": "vendorEmail",
+                "fieldType": "email"
+              },
+              {
+                "fieldLabel": "Vendor Phone",
+                "fieldName": "vendorPhone",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Address",
+                "fieldName": "address",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Tax ID (EIN/SSN)",
+                "fieldName": "taxId",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Categories",
+                "fieldName": "categories",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Payment Methods (select all that apply)",
+                "fieldName": "paymentMethods",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "1099 Required?",
+                "fieldName": "required1099",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "W9 URL (if you already have one)",
+                "fieldName": "w9Url",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "W9 File (optional)",
+                "fieldName": "w9File",
+                "fieldType": "file"
+              },
+              {
+                "fieldLabel": "Bank Name (optional)",
+                "fieldName": "bankName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Routing Number (optional)",
+                "fieldName": "routingNumber",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Bank Account (optional)",
+                "fieldName": "bankAccount",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Account Type",
+                "fieldName": "accountType",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Notes",
+                "fieldName": "notes",
+                "fieldType": "textarea"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 22
+        },
+        {
+          "nodeName": "Done Vendor Submitted",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Org registration (live)",
+      "workflowId": "1NLAgVVRrslyZ3VM",
+      "workflowName": "19. GrantFlow 360 - Organization Registration Form",
+      "active": true,
+      "formNodeCount": 3,
+      "totalFieldCount": 33,
+      "forms": [
+        {
+          "nodeName": "Org Form - Identity",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Organization Registration",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "First Name",
+              "fieldName": "firstName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "fieldName": "lastName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldName": "email",
+              "fieldType": "email",
+              "required": true
+            },
+            {
+              "fieldLabel": "Phone",
+              "fieldName": "phone",
+              "fieldType": "",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 6
+        },
+        {
+          "nodeName": "Org Form - Details",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Organization Name",
+                "fieldName": "organizationName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Organization Type",
+                "fieldName": "organizationType",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "EIN",
+                "fieldName": "ein",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Organization Email",
+                "fieldName": "orgEmail",
+                "fieldType": "email"
+              },
+              {
+                "fieldLabel": "Organization Phone",
+                "fieldName": "orgPhone",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Address",
+                "fieldName": "address",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Website",
+                "fieldName": "website",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Mission Statement",
+                "fieldName": "mission",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "501(c)(3) Status?",
+                "fieldName": "status501c3",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Date Established",
+                "fieldName": "dateEstablished",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "Annual Budget",
+                "fieldName": "annualBudget",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Fiscal Year End",
+                "fieldName": "fiscalYearEnd",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "DUNS Number",
+                "fieldName": "duns",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "UEI Number",
+                "fieldName": "uei",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "SAM Registered?",
+                "fieldName": "samRegistered",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Ownership Header",
+                "fieldName": "ownershipHeader",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Business ownership / special status",
+                "fieldName": "ownershipStatus",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "If Other, please specify",
+                "fieldName": "ownershipOther",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Is this status officially certified?",
+                "fieldName": "ownershipCertified",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Certification type / agency (if applicable)",
+                "fieldName": "ownershipCertAgency",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Certification document URL (if applicable)",
+                "fieldName": "ownershipCertUrl",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Upload certification document (optional)",
+                "fieldName": "ownershipCertFile",
+                "fieldType": "file"
+              },
+              {
+                "fieldLabel": "W9 URL",
+                "fieldName": "w9Url",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Bank Account Info",
+                "fieldName": "bankInfo",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Social Media",
+                "fieldName": "socialMedia",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Notes",
+                "fieldName": "notes",
+                "fieldType": "textarea"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 27
+        },
+        {
+          "nodeName": "Org Registration Done",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Org activate (live)",
+      "workflowId": "HpfPuazTY4kLn9zD",
+      "workflowName": "20. GrantFlow 360 - Organization Activate Form",
+      "active": true,
+      "formNodeCount": 5,
+      "totalFieldCount": 7,
+      "forms": [
+        {
+          "nodeName": "Org Activate - Open",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Activate Organization",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 4
+        },
+        {
+          "nodeName": "Missing Activate Link",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Org Not Activatable",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Activate Decision",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Summary",
+                "fieldName": "sum",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Decision",
+                "fieldName": "decision",
+                "fieldType": "dropdown"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 3
+        },
+        {
+          "nodeName": "Activate Done",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Project status (live)",
+      "workflowId": "4HJwIw8BTxbdI1fo",
+      "workflowName": "22. GrantFlow 360 - Project Status Form",
+      "active": true,
+      "formNodeCount": 5,
+      "totalFieldCount": 8,
+      "forms": [
+        {
+          "nodeName": "Project Status - Open",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "Project Status",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 4
+        },
+        {
+          "nodeName": "Missing Project Link",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Project Not Found",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Project Status Decision",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Summary",
+                "fieldName": "sum",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "New Status",
+                "fieldName": "newStatus",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Notes (optional)",
+                "fieldName": "notes",
+                "fieldType": "textarea"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 4
+        },
+        {
+          "nodeName": "Project Status Done",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Vendor application (dup/inactive)",
+      "workflowId": "7a4ALnPVdMOijPd9",
+      "workflowName": "15. GrantFlow 360 - Vendor Application Form",
+      "active": false,
+      "formNodeCount": 3,
+      "totalFieldCount": 28,
+      "forms": [
+        {
+          "nodeName": "Vendor Form - Identity",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "GrantFlow 360",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "Your First Name",
+              "fieldName": "firstName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Your Last Name",
+              "fieldName": "lastName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Your Email",
+              "fieldName": "email",
+              "fieldType": "email",
+              "required": true
+            },
+            {
+              "fieldLabel": "Your Phone",
+              "fieldName": "phone",
+              "fieldType": "",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 6
+        },
+        {
+          "nodeName": "Vendor Form - Details",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Organization",
+                "fieldName": "organization",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Vendor Name",
+                "fieldName": "vendorName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Vendor Type",
+                "fieldName": "vendorType",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Certification (WOB / MBE / Veteran)",
+                "fieldName": "certificationChoice",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Officially certified?",
+                "fieldName": "certificationStatus",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Which certificate?",
+                "fieldName": "certificationName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Contact Person",
+                "fieldName": "contactPerson",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Vendor Email",
+                "fieldName": "vendorEmail",
+                "fieldType": "email"
+              },
+              {
+                "fieldLabel": "Vendor Phone",
+                "fieldName": "vendorPhone",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Address",
+                "fieldName": "address",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Tax ID (EIN/SSN)",
+                "fieldName": "taxId",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Categories",
+                "fieldName": "categories",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Payment Methods (select all that apply)",
+                "fieldName": "paymentMethods",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "1099 Required?",
+                "fieldName": "required1099",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "W9 URL (if you already have one)",
+                "fieldName": "w9Url",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "W9 File (optional)",
+                "fieldName": "w9File",
+                "fieldType": "file"
+              },
+              {
+                "fieldLabel": "Bank Name (optional)",
+                "fieldName": "bankName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Routing Number (optional)",
+                "fieldName": "routingNumber",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Bank Account (optional)",
+                "fieldName": "bankAccount",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Account Type",
+                "fieldName": "accountType",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Notes",
+                "fieldName": "notes",
+                "fieldType": "textarea"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 22
+        },
+        {
+          "nodeName": "Done Vendor Submitted",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Vendor review (dup/inactive)",
+      "workflowId": "9k2jzvWljhdtosCH",
+      "workflowName": "16. GrantFlow 360 - Vendor Review Form",
+      "active": false,
+      "formNodeCount": 5,
+      "totalFieldCount": 8,
+      "forms": [
+        {
+          "nodeName": "Vendor Review - Open",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "GrantFlow 360",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "opportunityId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 5
+        },
+        {
+          "nodeName": "Missing Review Link",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Vendor Not Reviewable",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "Review Decision Page",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Summary",
+                "fieldName": "summary",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Decision",
+                "fieldName": "decision",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Reviewer Notes",
+                "fieldName": "reviewerNotes",
+                "fieldType": "textarea"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 3
+        },
+        {
+          "nodeName": "Review Done",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Vendor W9 (dup/inactive)",
+      "workflowId": "Mnzgn7ljTsunNDVM",
+      "workflowName": "17. GrantFlow 360 - Vendor W9 Upload Form",
+      "active": false,
+      "formNodeCount": 4,
+      "totalFieldCount": 8,
+      "forms": [
+        {
+          "nodeName": "W9 Form - Open",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "GrantFlow 360",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "contactId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "recordId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "(hidden)",
+              "fieldName": "opportunityId",
+              "fieldType": "hiddenField",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 5
+        },
+        {
+          "nodeName": "Missing W9 Link",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        },
+        {
+          "nodeName": "W9 Upload Page",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Summary",
+                "fieldName": "sum",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "W9 File",
+                "fieldName": "w9File",
+                "fieldType": "file"
+              },
+              {
+                "fieldLabel": "Or W9 URL",
+                "fieldName": "w9Url",
+                "fieldType": "text"
+              }
+            ]
+          },
+          "fieldCount": 3
+        },
+        {
+          "nodeName": "W9 Done",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    },
+    {
+      "label": "Project registration (dup/inactive)",
+      "workflowId": "NZnLCy4mo0iWP69n",
+      "workflowName": "21. GrantFlow 360 - Project Registration Form",
+      "active": false,
+      "formNodeCount": 4,
+      "totalFieldCount": 30,
+      "forms": [
+        {
+          "nodeName": "Project Form - Identity",
+          "nodeType": "n8n-nodes-base.formTrigger",
+          "formTitle": "GrantFlow 360",
+          "formFields": [
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            },
+            {
+              "fieldLabel": "First Name",
+              "fieldName": "firstName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "fieldName": "lastName",
+              "fieldType": "",
+              "required": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldName": "email",
+              "fieldType": "email",
+              "required": true
+            },
+            {
+              "fieldLabel": "Phone",
+              "fieldName": "phone",
+              "fieldType": "",
+              "required": false
+            },
+            {
+              "fieldLabel": "",
+              "fieldName": "",
+              "fieldType": "html",
+              "required": false
+            }
+          ],
+          "fieldCount": 6
+        },
+        {
+          "nodeName": "Project Form - Core",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Organization",
+                "fieldName": "organization",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Funding Source",
+                "fieldName": "fundingSource",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Project Name",
+                "fieldName": "projectName",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Project Start Date",
+                "fieldName": "startDate",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "Project End Date",
+                "fieldName": "endDate",
+                "fieldType": "date"
+              },
+              {
+                "fieldLabel": "Total Budget",
+                "fieldName": "totalBudget",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Status",
+                "fieldName": "status",
+                "fieldType": "dropdown"
+              },
+              {
+                "fieldLabel": "Project Description",
+                "fieldName": "description",
+                "fieldType": "textarea"
+              }
+            ],
+            "notes": "dropdown options built in code"
+          },
+          "fieldCount": 9
+        },
+        {
+          "nodeName": "Project Form - Extra",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "dynamicFields": {
+            "source": "jsonOutput",
+            "fields": [
+              {
+                "fieldLabel": "Brand",
+                "fieldName": "brand2",
+                "fieldType": "html"
+              },
+              {
+                "fieldLabel": "Target Population",
+                "fieldName": "targetPopulation",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Geographic Area",
+                "fieldName": "geographicArea",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Expected Outcomes",
+                "fieldName": "expectedOutcomes",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Evaluation Method",
+                "fieldName": "evaluationMethod",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Partner Orgs",
+                "fieldName": "partnerOrgs",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Volunteer Hours",
+                "fieldName": "volunteerHours",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Participants Target",
+                "fieldName": "participantsTarget",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Participants Actual",
+                "fieldName": "participantsActual",
+                "fieldType": "number"
+              },
+              {
+                "fieldLabel": "Project Website",
+                "fieldName": "projectWebsite",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Social Media",
+                "fieldName": "socialMedia",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Photos URL",
+                "fieldName": "photosUrl",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Videos URL",
+                "fieldName": "videosUrl",
+                "fieldType": "text"
+              },
+              {
+                "fieldLabel": "Press Coverage",
+                "fieldName": "pressCoverage",
+                "fieldType": "textarea"
+              },
+              {
+                "fieldLabel": "Notes",
+                "fieldName": "notes",
+                "fieldType": "textarea"
+              }
+            ]
+          },
+          "fieldCount": 15
+        },
+        {
+          "nodeName": "Project Done",
+          "nodeType": "n8n-nodes-base.form",
+          "formTitle": "",
+          "formFields": [],
+          "fieldCount": 0
+        }
+      ]
+    }
+  ],
+  "notificationPatterns": {
+    "GF360_Notification_Type": [],
+    "gf360_notification_type": [
+      {
+        "workflowId": "9WEMrW8Lj87OYyR3",
+        "workflowName": "23. GrantFlow 360 - Grant RFP Form (Form A)"
+      },
+      {
+        "workflowId": "Gx2VBLd2BxxYdEVw",
+        "workflowName": "24. GrantFlow 360 - Applicant Grant Submission (Form B)"
+      },
+      {
+        "workflowId": "vUaZhBe4zJBEzDeh",
+        "workflowName": "10. GrantFlow 360 - Grant Allocation Determination (Form C)"
+      },
+      {
+        "workflowId": "5MEAz4NFb4TvI7Fr",
+        "workflowName": "8. GrantFlow 360 - Reviewer Decision Form"
+      },
+      {
+        "workflowId": "az7zrq2ONfWwnSQt",
+        "workflowName": "16. GrantFlow 360 - Apply for Extension"
+      },
+      {
+        "workflowId": "NPTTLmsODsYaOU2X",
+        "workflowName": "15. GrantFlow 360 - Progress Report Submit Form"
+      },
+      {
+        "workflowId": "hRRpt8HOdd4clrD4",
+        "workflowName": "13b. GrantFlow 360 - Funder Auto-Submit Review Form"
+      },
+      {
+        "workflowId": "h60rZ2n8Zv43D1CN",
+        "workflowName": "13. GrantFlow 360 - Forward to Funder Review"
+      },
+      {
+        "workflowId": "8eIwWbSg9mnRYcHu",
+        "workflowName": "15. GrantFlow 360 - Vendor Application Form"
+      },
+      {
+        "workflowId": "1NLAgVVRrslyZ3VM",
+        "workflowName": "19. GrantFlow 360 - Organization Registration Form"
+      },
+      {
+        "workflowId": "HpfPuazTY4kLn9zD",
+        "workflowName": "20. GrantFlow 360 - Organization Activate Form"
+      },
+      {
+        "workflowId": "4HJwIw8BTxbdI1fo",
+        "workflowName": "22. GrantFlow 360 - Project Status Form"
+      },
+      {
+        "workflowId": "7a4ALnPVdMOijPd9",
+        "workflowName": "15. GrantFlow 360 - Vendor Application Form"
+      },
+      {
+        "workflowId": "9k2jzvWljhdtosCH",
+        "workflowName": "16. GrantFlow 360 - Vendor Review Form"
+      },
+      {
+        "workflowId": "Mnzgn7ljTsunNDVM",
+        "workflowName": "17. GrantFlow 360 - Vendor W9 Upload Form"
+      },
+      {
+        "workflowId": "NZnLCy4mo0iWP69n",
+        "workflowName": "21. GrantFlow 360 - Project Registration Form"
+      }
+    ],
+    "GF360-Notify-Expense-Update": [
+      {
+        "workflowId": "9WEMrW8Lj87OYyR3",
+        "workflowName": "23. GrantFlow 360 - Grant RFP Form (Form A)"
+      },
+      {
+        "workflowId": "Gx2VBLd2BxxYdEVw",
+        "workflowName": "24. GrantFlow 360 - Applicant Grant Submission (Form B)"
+      },
+      {
+        "workflowId": "vUaZhBe4zJBEzDeh",
+        "workflowName": "10. GrantFlow 360 - Grant Allocation Determination (Form C)"
+      },
+      {
+        "workflowId": "5MEAz4NFb4TvI7Fr",
+        "workflowName": "8. GrantFlow 360 - Reviewer Decision Form"
+      },
+      {
+        "workflowId": "az7zrq2ONfWwnSQt",
+        "workflowName": "16. GrantFlow 360 - Apply for Extension"
+      },
+      {
+        "workflowId": "NPTTLmsODsYaOU2X",
+        "workflowName": "15. GrantFlow 360 - Progress Report Submit Form"
+      },
+      {
+        "workflowId": "hRRpt8HOdd4clrD4",
+        "workflowName": "13b. GrantFlow 360 - Funder Auto-Submit Review Form"
+      },
+      {
+        "workflowId": "h60rZ2n8Zv43D1CN",
+        "workflowName": "13. GrantFlow 360 - Forward to Funder Review"
+      },
+      {
+        "workflowId": "8eIwWbSg9mnRYcHu",
+        "workflowName": "15. GrantFlow 360 - Vendor Application Form"
+      },
+      {
+        "workflowId": "1NLAgVVRrslyZ3VM",
+        "workflowName": "19. GrantFlow 360 - Organization Registration Form"
+      },
+      {
+        "workflowId": "HpfPuazTY4kLn9zD",
+        "workflowName": "20. GrantFlow 360 - Organization Activate Form"
+      },
+      {
+        "workflowId": "4HJwIw8BTxbdI1fo",
+        "workflowName": "22. GrantFlow 360 - Project Status Form"
+      },
+      {
+        "workflowId": "7a4ALnPVdMOijPd9",
+        "workflowName": "15. GrantFlow 360 - Vendor Application Form"
+      },
+      {
+        "workflowId": "9k2jzvWljhdtosCH",
+        "workflowName": "16. GrantFlow 360 - Vendor Review Form"
+      },
+      {
+        "workflowId": "Mnzgn7ljTsunNDVM",
+        "workflowName": "17. GrantFlow 360 - Vendor W9 Upload Form"
+      },
+      {
+        "workflowId": "NZnLCy4mo0iWP69n",
+        "workflowName": "21. GrantFlow 360 - Project Registration Form"
+      }
+    ],
+    "gf360_last_action": [
+      {
+        "workflowId": "9WEMrW8Lj87OYyR3",
+        "workflowName": "23. GrantFlow 360 - Grant RFP Form (Form A)"
+      },
+      {
+        "workflowId": "Gx2VBLd2BxxYdEVw",
+        "workflowName": "24. GrantFlow 360 - Applicant Grant Submission (Form B)"
+      },
+      {
+        "workflowId": "vUaZhBe4zJBEzDeh",
+        "workflowName": "10. GrantFlow 360 - Grant Allocation Determination (Form C)"
+      },
+      {
+        "workflowId": "az7zrq2ONfWwnSQt",
+        "workflowName": "16. GrantFlow 360 - Apply for Extension"
+      },
+      {
+        "workflowId": "NPTTLmsODsYaOU2X",
+        "workflowName": "15. GrantFlow 360 - Progress Report Submit Form"
+      },
+      {
+        "workflowId": "hRRpt8HOdd4clrD4",
+        "workflowName": "13b. GrantFlow 360 - Funder Auto-Submit Review Form"
+      },
+      {
+        "workflowId": "h60rZ2n8Zv43D1CN",
+        "workflowName": "13. GrantFlow 360 - Forward to Funder Review"
+      },
+      {
+        "workflowId": "8eIwWbSg9mnRYcHu",
+        "workflowName": "15. GrantFlow 360 - Vendor Application Form"
+      },
+      {
+        "workflowId": "1NLAgVVRrslyZ3VM",
+        "workflowName": "19. GrantFlow 360 - Organization Registration Form"
+      },
+      {
+        "workflowId": "HpfPuazTY4kLn9zD",
+        "workflowName": "20. GrantFlow 360 - Organization Activate Form"
+      },
+      {
+        "workflowId": "4HJwIw8BTxbdI1fo",
+        "workflowName": "22. GrantFlow 360 - Project Status Form"
+      },
+      {
+        "workflowId": "7a4ALnPVdMOijPd9",
+        "workflowName": "15. GrantFlow 360 - Vendor Application Form"
+      },
+      {
+        "workflowId": "9k2jzvWljhdtosCH",
+        "workflowName": "16. GrantFlow 360 - Vendor Review Form"
+      },
+      {
+        "workflowId": "Mnzgn7ljTsunNDVM",
+        "workflowName": "17. GrantFlow 360 - Vendor W9 Upload Form"
+      },
+      {
+        "workflowId": "NZnLCy4mo0iWP69n",
+        "workflowName": "21. GrantFlow 360 - Project Registration Form"
+      }
+    ]
+  }
+}
