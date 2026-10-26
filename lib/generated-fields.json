@@ -90,9 +90,9 @@
           "type": "dropdown",
           "required": true,
           "options": [
-            "Reviewed by Internal Team",
-            "Reviewed by Third Party",
-            "Reviewed by IIM Team"
+            { "label": "Reviewed by Grant Circuit Team", "value": "Admin" },
+            { "label": "Reviewed by Internal Team", "value": "Internal" },
+            { "label": "Reviewed by Third Party", "value": "Third-Party" }
           ],
           "multiple": false
         },

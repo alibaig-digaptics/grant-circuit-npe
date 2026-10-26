@@ -64,7 +64,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import type { FormDef } from "@/lib/forms"
-import { isHiddenField, LOOKUP_FIELD_NAMES, stepsFor, type FormField } from "@/lib/form-schema"
+import { formatReviewProcess, isHiddenField, LOOKUP_FIELD_NAMES, stepsFor, type FormField } from "@/lib/form-schema"
 import { defaultValuesFor, schemaForStep } from "@/lib/zod-form"
 import { cn } from "@/lib/utils"
 
@@ -453,6 +453,12 @@ export function GrantForm({
               <span className="font-semibold text-foreground text-right">{rd.funderName}</span>
             </div>
           ) : null}
+          {!isVendorForm && rd?.reviewProcess ? (
+            <div className="flex items-center justify-between py-1 border-b border-border/30">
+              <span className="text-muted-foreground font-medium">Review Process:</span>
+              <span className="font-semibold text-foreground text-right">{formatReviewProcess(rd.reviewProcess)}</span>
+            </div>
+          ) : null}
           {showApplicantPackage && rd?.applicantOrg ? (
             <div className="flex items-center justify-between py-1 border-b border-border/30">
               <span className="text-muted-foreground font-medium">Applicant Org:</span>
@@ -514,7 +520,7 @@ export function GrantForm({
           {rd?.summary ? (
             <div className="pt-0.5 text-xs text-muted-foreground leading-relaxed">
               <span className="font-semibold text-foreground block mb-0.5">Grant Summary:</span>
-              <span>{rd.summary}</span>
+              <span>{rd.summary.replace(/Reviewed by IIM Team/gi, "Reviewed by Grant Circuit Team")}</span>
             </div>
           ) : null}
           {showApplicantPackage && rd?.proposalSummary ? (
@@ -916,20 +922,24 @@ function FormControl({
                       rhf.onChange(picked || "")
                     }}
                   >
-                    {field.options.map((option) => (
-                      <ToggleGroupItem
-                        key={option}
-                        value={option}
-                        className={cn(
-                          "cursor-pointer rounded-xl border border-border/80 px-3.5 py-2 text-xs sm:text-sm font-medium transition-all",
-                          rhf.value === option
-                            ? "border-primary bg-primary/10 text-primary ring-2 ring-primary/20 font-semibold"
-                            : "hover:bg-muted/50 text-foreground"
-                        )}
-                      >
-                        {option}
-                      </ToggleGroupItem>
-                    ))}
+                    {field.options.map((option) => {
+                      const optVal = typeof option === "string" ? option : option.value
+                      const optLabel = typeof option === "string" ? option : option.label
+                      return (
+                        <ToggleGroupItem
+                          key={optVal}
+                          value={optVal}
+                          className={cn(
+                            "cursor-pointer rounded-xl border border-border/80 px-3.5 py-2 text-xs sm:text-sm font-medium transition-all",
+                            rhf.value === optVal
+                              ? "border-primary bg-primary/10 text-primary ring-2 ring-primary/20 font-semibold"
+                              : "hover:bg-muted/50 text-foreground"
+                          )}
+                        >
+                          {optLabel}
+                        </ToggleGroupItem>
+                      )
+                    })}
                   </ToggleGroup>
                 ) : field.type === "dropdown" && (field.options.length > 4 || isForcedDropdown) ? (
                   <Select value={rhf.value || null} onValueChange={rhf.onChange}>
@@ -938,11 +948,15 @@ function FormControl({
                     </SelectTrigger>
                     <SelectContent className="rounded-xl shadow-lg border border-border/80">
                       <SelectGroup>
-                        {field.options.map((option) => (
-                          <SelectItem key={option} value={option} className="rounded-lg text-xs sm:text-sm">
-                            {option}
-                          </SelectItem>
-                        ))}
+                        {field.options.map((option) => {
+                          const optVal = typeof option === "string" ? option : option.value
+                          const optLabel = typeof option === "string" ? option : option.label
+                          return (
+                            <SelectItem key={optVal} value={optVal} className="rounded-lg text-xs sm:text-sm">
+                              {optLabel}
+                            </SelectItem>
+                          )
+                        })}
                       </SelectGroup>
                     </SelectContent>
                   </Select>

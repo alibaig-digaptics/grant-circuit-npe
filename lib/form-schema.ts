@@ -13,12 +13,14 @@ export type FieldType =
   | "date"
   | "checkbox"
 
+export type FormFieldOption = string | { label: string; value: string }
+
 export type FormField = {
   name: string
   label: string
   type: FieldType
   required: boolean
-  options: string[]
+  options: FormFieldOption[]
   multiple: boolean
 }
 
@@ -29,13 +31,30 @@ export type FormStep = {
 
 export const FORM_STEPS = generated as Record<string, FormStep[]>
 
-const OPTIONS: Record<string, string[]> = {
+export const REVIEW_PROCESS_OPTIONS = [
+  { label: "Reviewed by Grant Circuit Team", value: "Admin" },
+  { label: "Reviewed by Internal Team", value: "Internal" },
+  { label: "Reviewed by Third Party", value: "Third-Party" },
+]
+
+export function formatReviewProcess(val?: string): string {
+  if (!val) return ""
+  const normalized = val.trim().toLowerCase()
+  if (normalized === "admin" || normalized.includes("iim") || normalized.includes("grant circuit")) {
+    return "Reviewed by Grant Circuit Team"
+  }
+  if (normalized === "internal") {
+    return "Reviewed by Internal Team"
+  }
+  if (normalized === "third-party" || normalized === "third_party" || normalized.includes("third")) {
+    return "Reviewed by Third Party"
+  }
+  return val
+}
+
+const OPTIONS: Record<string, (string | { label: string; value: string })[]> = {
   numberOfAwards: ["Undetermined", "1", "2"],
-  reviewProcess: [
-    "Reviewed by Internal Team",
-    "Reviewed by Third Party",
-    "Reviewed by IIM Team",
-  ],
+  reviewProcess: REVIEW_PROCESS_OPTIONS,
   submitMode: ["Save for Later", "Submit Now"],
   paymentKind: ["Reimbursement", "Future Payment"],
   isReimbursement: ["Reimbursement", "Future Payment"],
@@ -76,7 +95,9 @@ export function stepsFor(slug: string): FormStep[] {
       ...step,
       fields: step.fields.map((field) => ({
         ...field,
-        options: field.options.length ? field.options : OPTIONS[field.name] || [],
+        options: field.name === "reviewProcess"
+          ? REVIEW_PROCESS_OPTIONS
+          : (field.options.length ? field.options : OPTIONS[field.name] || []),
       })),
     }))
     .filter((step) => step.fields.some((field) => !isHiddenField(field)))
