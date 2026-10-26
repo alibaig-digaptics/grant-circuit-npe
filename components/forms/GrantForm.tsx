@@ -944,7 +944,14 @@ function FormControl({
                 ) : field.type === "dropdown" && (field.options.length > 4 || isForcedDropdown) ? (
                   <Select value={rhf.value || null} onValueChange={rhf.onChange}>
                     <SelectTrigger id={field.name} aria-invalid={bad || undefined} className="h-10 rounded-xl">
-                      <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
+                      <SelectValue placeholder={`Select ${field.label.toLowerCase()}`}>
+                        {(() => {
+                          const match = field.options.find(
+                            (o) => (typeof o === "string" ? o : o.value) === rhf.value
+                          )
+                          return match ? (typeof match === "string" ? match : match.label) : null
+                        })()}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent className="rounded-xl shadow-lg border border-border/80">
                       <SelectGroup>
