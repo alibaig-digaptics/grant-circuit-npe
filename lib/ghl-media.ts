@@ -2,7 +2,7 @@ const GHL = "https://services.leadconnectorhq.com"
 
 export async function uploadGhlMedia(file: File): Promise<string> {
   const key = process.env.GF360_GHL_PRIVATE_KEY || ""
-  const locationId = process.env.GF360_GHL_LOCATION_ID || "yOqSXTaFVFjQV5f4l5fb"
+  const locationId = process.env.GF360_GHL_LOCATION_ID || "fwAgT5nunV4RIrV84OEh"
   if (!key) throw new Error("GF360_GHL_PRIVATE_KEY is missing")
 
   const body = new FormData()

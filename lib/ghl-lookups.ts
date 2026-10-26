@@ -7,7 +7,7 @@ type GhlRecord = {
 
 async function ghlFetch(path: string, init?: RequestInit) {
   const key = process.env.GF360_GHL_PRIVATE_KEY || ""
-  const locationId = process.env.GF360_GHL_LOCATION_ID || "yOqSXTaFVFjQV5f4l5fb"
+  const locationId = process.env.GF360_GHL_LOCATION_ID || "fwAgT5nunV4RIrV84OEh"
   if (!key) throw new Error("GF360_GHL_PRIVATE_KEY is missing")
   const res = await fetch(`${GHL}${path}`, {
     ...init,
@@ -53,7 +53,7 @@ function labels(records: GhlRecord[], keys: string[]) {
 }
 
 async function searchObject(schemaKey: string) {
-  const locationId = process.env.GF360_GHL_LOCATION_ID || "yOqSXTaFVFjQV5f4l5fb"
+  const locationId = process.env.GF360_GHL_LOCATION_ID || "fwAgT5nunV4RIrV84OEh"
   const { data } = await ghlFetch(
     `/objects/${schemaKey}/records/search`,
     {

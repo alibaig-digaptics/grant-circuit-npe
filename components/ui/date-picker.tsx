@@ -84,7 +84,7 @@ export function DatePicker({
         <Calendar
           mode="single"
           selected={selectedDate}
-          defaultMonth={selectedDate || new Date(2000, 0, 1)}
+          defaultMonth={selectedDate || new Date()}
           captionLayout="dropdown"
           onSelect={handleSelect}
         />

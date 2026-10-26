@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   }
 
   const key = process.env.GF360_GHL_PRIVATE_KEY || ""
-  const locationId = process.env.GF360_GHL_LOCATION_ID || "yOqSXTaFVFjQV5f4l5fb"
+  const locationId = process.env.GF360_GHL_LOCATION_ID || "fwAgT5nunV4RIrV84OEh"
   if (!key) {
     return NextResponse.json({ error: "GF360_GHL_PRIVATE_KEY is missing" }, { status: 500 })
   }
