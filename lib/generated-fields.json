@@ -1460,7 +1460,7 @@
       "title": "Organization",
       "fields": [
         { "name": "organizationName", "label": "Organization Name", "type": "text", "required": true, "options": [], "multiple": false },
-        { "name": "organizationType", "label": "Organization Type", "type": "dropdown", "required": false, "options": [], "multiple": false },
+        { "name": "organizationType", "label": "Organization Type", "type": "dropdown", "required": false, "options": [{"label":"Fiscal Sponsor","value":"fiscal_sponsor"},{"label":"Community Foundation","value":"community_foundation"},{"label":"Faith-Based Organization","value":"faithbased_organization"},{"label":"University/Research Institution","value":"universityresearch_institution"},{"label":"Government Agency","value":"government_agency"},{"label":"501(c)(3) Nonprofit","value":"501c3_nonprofit"},{"label":"501(c)(4) Social Welfare","value":"501c4_social_welfare"},{"label":"501(c)(6) Trade Association","value":"501c6_trade_association"},{"label":"LLC (Fiscal Sponsoree)","value":"llc_fiscal_sponsoree"}], "multiple": false },
         { "name": "ein", "label": "EIN", "type": "text", "required": true, "options": [], "multiple": false },
         { "name": "website", "label": "Website", "type": "text", "required": false, "options": [], "multiple": false },
         { "name": "mission", "label": "Mission Statement", "type": "textarea", "required": false, "options": [], "multiple": false }

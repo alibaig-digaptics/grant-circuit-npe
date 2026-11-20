@@ -27,6 +27,7 @@ import {
   Send,
   Sparkles,
 } from "lucide-react"
+import { funderAutocomplete, funderPrefill } from "@/lib/funder-prefill"
 import { FormShell } from "@/components/forms/FormShell"
 import { FileDropZone } from "@/components/forms/FileDropZone"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -119,6 +120,7 @@ export function GrantForm({
   const contactId = params.get("contactId") || ""
   const recordId = params.get("recordId") || ""
   const opportunityId = params.get("opportunityId") || ""
+  const isFunderSignup = form.slug === "funder-registration"
   const steps = stepsFor(form.slug)
   const stepLabels = steps.map((s, i) => ({
     id: i + 1,
@@ -129,6 +131,7 @@ export function GrantForm({
   const [files, setFiles] = useState<Record<string, File[]>>({})
   const lookups = useQuery({
     queryKey: ["gc-lookups"],
+    enabled: !isFunderSignup,
     queryFn: async () => {
       const res = await fetch("/api/lookups")
       const data = (await res.json().catch(() => ({}))) as Record<string, string[]>
@@ -166,7 +169,7 @@ export function GrantForm({
       if (!res.ok) throw new Error("Could not load grant details")
       return data
     },
-    enabled: Boolean(recordId),
+    enabled: Boolean(recordId) && !isFunderSignup,
   })
   const current = steps[step]
     ? {
@@ -186,7 +189,7 @@ export function GrantForm({
     resolver: current
       ? (zodResolver(schemaForStep(current)) as Resolver<FormValues>)
       : undefined,
-    defaultValues: defaultValuesFor(steps, { contactId, recordId, opportunityId }),
+    defaultValues: defaultValuesFor(steps, { contactId, recordId, opportunityId, ...(isFunderSignup ? funderPrefill(params) : {}) }),
     mode: "onSubmit",
   })
 
@@ -692,12 +695,14 @@ export function GrantForm({
                       <FormControl
                         key={f.name}
                         field={f}
+                        autoComplete={isFunderSignup ? funderAutocomplete[f.name] : undefined}
                         files={files[f.name] || []}
                         onFiles={(list) => setFiles((prev) => ({ ...prev, [f.name]: list }))}
                       />
                       <FormControl
                         key={next.name}
                         field={next}
+                        autoComplete={isFunderSignup ? funderAutocomplete[next.name] : undefined}
                         files={files[next.name] || []}
                         onFiles={(list) => setFiles((prev) => ({ ...prev, [next.name]: list }))}
                       />
@@ -711,6 +716,7 @@ export function GrantForm({
                   <FormControl
                     key={f.name}
                     field={f}
+                    autoComplete={isFunderSignup ? funderAutocomplete[f.name] : undefined}
                     files={files[f.name] || []}
                     onFiles={(list) => setFiles((prev) => ({ ...prev, [f.name]: list }))}
                   />
@@ -828,8 +834,10 @@ function FormControl({
   field,
   files,
   onFiles,
+  autoComplete,
 }: {
   field: FormField
+  autoComplete?: string
   files: File[]
   onFiles: (files: File[]) => void
 }) {
@@ -908,6 +916,7 @@ function FormControl({
                 ) : field.type === "tel" ? (
                   <PhoneInput
                     id={field.name}
+                    autoComplete={autoComplete}
                     value={rhf.value || ""}
                     onChange={rhf.onChange}
                     invalid={bad}
@@ -970,6 +979,7 @@ function FormControl({
                 ) : (
                   <Input
                     id={field.name}
+                    autoComplete={autoComplete}
                     type={
                       field.type === "number"
                         ? "number"
