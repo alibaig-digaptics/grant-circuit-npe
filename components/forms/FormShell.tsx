@@ -11,7 +11,7 @@ export function FormShell({
   isEmbedded,
   children,
 }: {
-  form: FormDef
+  form: Pick<FormDef, "title" | "subtitle">
   currentStep?: number
   totalSteps?: number
   stepLabels?: { id: number; label: string }[]
