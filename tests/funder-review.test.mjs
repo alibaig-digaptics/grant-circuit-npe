@@ -39,3 +39,8 @@ test('personalized links only hydrate editable contact details', async () => {
   assert.deepEqual(funderPrefill(input), { firstName: 'Morgan', email: 'morgan@example.com', organizationName: 'Sample' })
   assert.deepEqual(funderPrefill(new URLSearchParams()), {})
 })
+
+test('review page keeps the origin on browser form submissions without exposing the full review URL', () => {
+  const page = readFileSync(new URL('../app/funder-review/page.tsx', import.meta.url), 'utf8')
+  assert.match(page, /referrer: 'strict-origin'/)
+})

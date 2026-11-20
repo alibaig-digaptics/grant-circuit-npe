@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { funderRecordRequest, reviewAllowed, reviewState } from '@/lib/funder-review'
 
-export const metadata: Metadata = { title: 'Review funder application', robots: { index: false, follow: false }, referrer: 'no-referrer' }
+export const metadata: Metadata = { title: 'Review funder application', robots: { index: false, follow: false }, referrer: 'strict-origin' }
 
 export default async function FunderReview({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const q = await searchParams
