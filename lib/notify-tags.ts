@@ -90,6 +90,7 @@ export function tagForForm(
   if (slug === "vendor-review") return EVENT_TAGS.vendorW9Requested
   if (slug === "vendor-w9") return "vendor-w9-uploaded"
   if (slug === "org-registration") return EVENT_TAGS.newOrganizationSignup
+  if (slug === "funder-registration") return "funder-application-received"
   if (slug === "org-activate") return EVENT_TAGS.organizationActivated
   if (slug === "project-registration") return EVENT_TAGS.projectRegistered
   if (slug === "project-status") return EVENT_TAGS.projectStatusUpdated

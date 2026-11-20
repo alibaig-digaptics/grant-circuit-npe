@@ -14,6 +14,7 @@ export type FormSlug =
   | "vendor-review"
   | "vendor-w9"
   | "org-registration"
+  | "funder-registration"
   | "org-activate"
   | "project-registration"
   | "project-status"
@@ -33,8 +34,8 @@ export type FormDef = {
 export const FORMS: FormDef[] = [
   {
     slug: "grant-rfp",
-    title: "Grant Application",
-    subtitle: "For funding organizations",
+    title: "Create Grant",
+    subtitle: "For an approved funder",
     audience: "funder",
     n8nPath: "gc-grant-rfp-npe",
     webhookEnv: "N8N_GRANT_RFP_WEBHOOK_URL",
@@ -197,6 +198,18 @@ export const FORMS: FormDef[] = [
     steps: [
       { id: 1, label: "Your info" },
       { id: 2, label: "Upload" },
+    ],
+  },
+  {
+    slug: "funder-registration",
+    title: "Application for becoming a funder",
+    subtitle: "Apply before you can create a grant",
+    audience: "funder",
+    n8nPath: "gc-funder-registration-npe",
+    webhookEnv: "N8N_FUNDER_REGISTRATION_WEBHOOK_URL",
+    steps: [
+      { id: 1, label: "Your info" },
+      { id: 2, label: "Organization" },
     ],
   },
   {

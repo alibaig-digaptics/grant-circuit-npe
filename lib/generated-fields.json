@@ -1446,6 +1446,27 @@
       ]
     }
   ],
+  "funder-registration": [
+    {
+      "title": "Your info",
+      "fields": [
+        { "name": "firstName", "label": "First Name", "type": "text", "required": true, "options": [], "multiple": false },
+        { "name": "lastName", "label": "Last Name", "type": "text", "required": true, "options": [], "multiple": false },
+        { "name": "email", "label": "Email", "type": "email", "required": true, "options": [], "multiple": false },
+        { "name": "phone", "label": "Phone", "type": "tel", "required": false, "options": [], "multiple": false }
+      ]
+    },
+    {
+      "title": "Organization",
+      "fields": [
+        { "name": "organizationName", "label": "Organization Name", "type": "text", "required": true, "options": [], "multiple": false },
+        { "name": "organizationType", "label": "Organization Type", "type": "dropdown", "required": false, "options": [], "multiple": false },
+        { "name": "ein", "label": "EIN", "type": "text", "required": true, "options": [], "multiple": false },
+        { "name": "website", "label": "Website", "type": "text", "required": false, "options": [], "multiple": false },
+        { "name": "mission", "label": "Mission Statement", "type": "textarea", "required": false, "options": [], "multiple": false }
+      ]
+    }
+  ],
   "org-activate": [
     {
       "title": "Org Activate - Open",
