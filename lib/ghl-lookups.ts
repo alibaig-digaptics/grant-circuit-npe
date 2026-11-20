@@ -76,9 +76,7 @@ export async function loadLookups() {
   const approvedSeekers = orgs.filter(
     (rec) => rec.properties?.approval_status === "approved" && rec.properties?.party_role !== "funder",
   )
-  const hireableVendors = vendors.filter(
-    (rec) => !["pending", "onboarding", "rejected", "inactive", "closed"].includes(String(rec.properties?.status || "").toLowerCase()),
-  )
+  const hireableVendors = vendors.filter((rec) => String(rec.properties?.status || "").toLowerCase() === "active")
   return {
     organization: labels(approvedSeekers, ["organization_name", "name"]),
     fundingSource: labels(funding, ["grant_name", "name"]),
