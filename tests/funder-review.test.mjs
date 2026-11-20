@@ -58,3 +58,12 @@ test('Create Grant access requires an approved, active funder and a matching pri
   assert.equal(link.searchParams.get('access'), token)
   assert.equal([...link.searchParams].length, 2)
 })
+
+test('a review message preserves wording and line breaks without turning it into email markup', async () => {
+  const { reviewMessageForEmail, REVIEW_MESSAGE_LIMIT } = await import('../lib/funder-review.ts')
+  assert.equal(reviewMessageForEmail('  Thanks & welcome!\r\nPlease read <the guide>.  '), 'Thanks &amp; welcome!\nPlease read &lt;the guide&gt;.')
+  assert.equal(reviewMessageForEmail('Use {{contact.email}} literally.'), 'Use &#123;&#123;contact.email&#125;&#125; literally.')
+  assert.equal(reviewMessageForEmail(' \n '), null)
+  assert.equal(reviewMessageForEmail(null), null)
+  assert.equal(reviewMessageForEmail('a'.repeat(REVIEW_MESSAGE_LIMIT + 1)), null)
+})

@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { NextResponse } from 'next/server'
-import { createGrantLink, funderContact, funderGhl, funderLocation, funderRecordRequest, reviewAllowed, reviewState } from '@/lib/funder-review'
+import { createGrantLink, funderContact, funderGhl, funderLocation, funderRecordRequest, reviewAllowed, reviewMessageForEmail, reviewState } from '@/lib/funder-review'
 
 export async function POST(request: Request) {
   const origin = new URL(request.url).origin
@@ -14,11 +14,18 @@ export async function POST(request: Request) {
   if (!state || !/^[a-f0-9]{64}$/.test(token)) return redirect('invalid')
   const record = await funderRecordRequest(id)
   if (!record || !reviewAllowed(record, token)) return redirect('invalid')
+  const message = reviewMessageForEmail(form?.get('message'))
+  if (message === null) {
+    const retry = new URL('/funder-review', origin)
+    retry.search = new URLSearchParams({ recordId: id, token, error: 'message' }).toString()
+    return NextResponse.redirect(retry, 303)
+  }
 
   const [contact, fields] = await Promise.all([funderContact(record), funderGhl(`/locations/${funderLocation()}/customFields?model=contact`)]).catch(() => [null, null])
   const fieldId = (key: string) => fields?.customFields?.find((f: { fieldKey: string }) => f.fieldKey === key)?.id
   const fieldValues = {
     'contact.funder_notification_type': state.approval_status,
+    'contact.funder_decision_message': message,
     'contact.funder_create_grant_url': '',
   }
   if (!contact || Object.keys(fieldValues).some(key => !fieldId(key))) return redirect('failed')

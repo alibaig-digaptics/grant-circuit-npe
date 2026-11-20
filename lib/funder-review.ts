@@ -33,6 +33,16 @@ export function createGrantLink(origin: string, id: string, token: string) {
   return url.toString()
 }
 
+export const REVIEW_MESSAGE_LIMIT = 1000
+
+export function reviewMessageForEmail(input: unknown) {
+  if (typeof input !== 'string' || input.length > REVIEW_MESSAGE_LIMIT) return null
+  const message = input.replace(/\r\n?/g, '\n').trim()
+  if (!message) return null
+  const entities: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '{': '&#123;', '}': '&#125;' }
+  return message.replace(/[&<>{}]/g, char => entities[char])
+}
+
 export function reviewState(decision: string) {
   if (decision === 'accept') return { approval_status: 'approved', status: 'active' }
   if (decision === 'reject') return { approval_status: 'rejected', status: 'inactive' }
