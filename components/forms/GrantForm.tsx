@@ -187,15 +187,15 @@ export function GrantForm({
     : steps[step]
   const last = step === steps.length - 1
 
+  // Fields hidden for this answer set (such as an individual seeker's organization details) are not validated.
+  function activeStep<T extends { fields: FormField[] }>(stepDef: T, values: Record<string, unknown>): T {
+    return { ...stepDef, fields: stepDef.fields.filter((field) => !hiddenForValues(form.slug, field.name, values)) }
+  }
+
   const methods = useForm<FormValues>({
     resolver: current
       ? ((values, context, options) =>
-          zodResolver(
-            schemaForStep({
-              ...current,
-              fields: current.fields.filter((field) => !hiddenForValues(form.slug, field.name, values)),
-            }),
-          )(values, context, options as never)) as Resolver<FormValues>
+          zodResolver(schemaForStep(activeStep(current, values)))(values, context, options as never)) as Resolver<FormValues>
       : undefined,
     defaultValues: defaultValuesFor(steps, { contactId, recordId, opportunityId, ...(isFunderSignup ? funderPrefill(params) : {}), ...grantDefaults }),
     mode: "onSubmit",
@@ -669,7 +669,7 @@ export function GrantForm({
         <form
           className="flex flex-col gap-5"
           onSubmit={methods.handleSubmit((values: FormValues) => {
-            const parsed = schemaForStep(current).safeParse(values)
+            const parsed = schemaForStep(activeStep(current, values)).safeParse(values)
             if (!parsed.success) {
               for (const issue of parsed.error.issues) {
                 const key = String(issue.path[0] || "")
