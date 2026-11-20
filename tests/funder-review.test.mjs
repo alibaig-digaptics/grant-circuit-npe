@@ -44,3 +44,17 @@ test('review page keeps the origin on browser form submissions without exposing 
   const page = readFileSync(new URL('../app/funder-review/page.tsx', import.meta.url), 'utf8')
   assert.match(page, /referrer: 'strict-origin'/)
 })
+
+test('Create Grant access requires an approved, active funder and a matching private token', async () => {
+  const { grantAccessAllowed, createGrantLink } = await import('../lib/funder-review.ts')
+  const record = { id, properties: { party_role: 'funder', approval_status: 'approved', status: 'active', create_grant_token_hash: hash } }
+  assert.equal(grantAccessAllowed(record, token), true)
+  assert.equal(grantAccessAllowed(record, 'b'.repeat(64)), false)
+  assert.equal(grantAccessAllowed({...record, properties: {...record.properties, approval_status: 'rejected'}}, token), false)
+  assert.equal(grantAccessAllowed({...record, properties: {...record.properties, status: 'inactive'}}, token), false)
+  const link = new URL(createGrantLink('https://forms.example.com', id, token))
+  assert.equal(link.pathname, '/forms/grant-rfp')
+  assert.equal(link.searchParams.get('organizationId'), id)
+  assert.equal(link.searchParams.get('access'), token)
+  assert.equal([...link.searchParams].length, 2)
+})

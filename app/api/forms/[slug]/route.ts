@@ -1,16 +1,20 @@
 import { NextResponse } from "next/server"
+import { authorizedGrantDetails, funderLocation } from "@/lib/funder-review"
 import { getForm, webhookUrl } from "@/lib/forms"
 import { uploadGhlMedia } from "@/lib/ghl-media"
 import { SIMPLE_FIELDS, tagForForm } from "@/lib/notify-tags"
 
-async function readBody(request: Request): Promise<Record<string, unknown>> {
+async function readBody(request: Request, authorize?: (body: Record<string, unknown>) => Promise<Record<string, unknown> | null>): Promise<Record<string, unknown> | null> {
   const ct = request.headers.get("content-type") || ""
   if (!ct.includes("multipart/form-data")) {
-    return ((await request.json().catch(() => ({}))) || {}) as Record<string, unknown>
+    const body = ((await request.json().catch(() => ({}))) || {}) as Record<string, unknown>
+    return authorize ? authorize(body) : body
   }
   const fd = await request.formData()
   const raw = String(fd.get("payload") || "{}")
-  const body = JSON.parse(raw) as Record<string, unknown>
+  const parsed = JSON.parse(raw) as Record<string, unknown>
+  const body = authorize ? await authorize(parsed) : parsed
+  if (!body) return null
   const filesByField = new Map<string, File[]>()
   for (const [key, value] of fd.entries()) {
     if (key === "payload" || typeof value === "string") continue
@@ -21,7 +25,7 @@ async function readBody(request: Request): Promise<Record<string, unknown>> {
   for (const [key, list] of filesByField) {
     const urls: string[] = []
     for (const file of list) urls.push(await uploadGhlMedia(file))
-    body[key] = urls
+    if (!authorize || key === "requirementPdf" || key === "closingChecklist") body[key] = urls
   }
   return body
 }
@@ -36,7 +40,11 @@ export async function POST(
     return NextResponse.json({ error: "Unknown form" }, { status: 404 })
   }
 
-  const body = await readBody(request)
+  const body = await readBody(request, slug === "grant-rfp" ? async (input) => {
+    const funder = await authorizedGrantDetails(String(input.organizationId || ""), String(input.grantAccess || "")).catch(() => null)
+    return funder ? { ...input, ...funder, locationId: funderLocation() } : null
+  } : undefined)
+  if (!body) return NextResponse.json({ error: "Use the private Create Grant link from your approval email." }, { status: 403 })
   const url = webhookUrl(form)
 
   const res = await fetch(url, {

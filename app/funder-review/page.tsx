@@ -16,7 +16,7 @@ export default async function FunderReview({ searchParams }: { searchParams: Pro
   return <main className="mx-auto max-w-xl px-6 py-16">
     <section className="rounded-xl border bg-card p-7 shadow-sm">
       <h1 className="mb-4 text-2xl font-semibold">{canReview ? `${verb} funder application` : 'Review funder application'}</h1>
-      {q.result === 'approved' || q.result === 'rejected' ? <p>Decision recorded: {q.result}.</p> : canReview ? <>
+      {q.result === 'approved-notify-failed' || q.result === 'rejected-notify-failed' ? <p>The decision was saved, but the notification could not be queued. Contact your administrator.</p> : q.result === 'approved' || q.result === 'rejected' ? <p>Decision recorded: {q.result}.</p> : canReview ? <>
         <p className="mb-5">Confirm your decision for <strong>{String(record.properties.organization_name || 'this organization')}</strong>.</p>
         <form method="post" action="/funder-review/decision">
           <input type="hidden" name="recordId" value={id} />

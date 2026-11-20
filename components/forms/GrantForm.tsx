@@ -112,9 +112,11 @@ function getFieldIcon(name: string, type: string) {
 export function GrantForm({
   form,
   isEmbedded,
+  grantDefaults,
 }: {
   form: FormDef
   isEmbedded?: boolean
+  grantDefaults?: Record<string, string>
 }) {
   const params = useSearchParams()
   const contactId = params.get("contactId") || ""
@@ -131,7 +133,7 @@ export function GrantForm({
   const [files, setFiles] = useState<Record<string, File[]>>({})
   const lookups = useQuery({
     queryKey: ["gc-lookups"],
-    enabled: !isFunderSignup,
+    enabled: !isFunderSignup && !grantDefaults,
     queryFn: async () => {
       const res = await fetch("/api/lookups")
       const data = (await res.json().catch(() => ({}))) as Record<string, string[]>
@@ -169,7 +171,7 @@ export function GrantForm({
       if (!res.ok) throw new Error("Could not load grant details")
       return data
     },
-    enabled: Boolean(recordId) && !isFunderSignup,
+    enabled: Boolean(recordId) && !isFunderSignup && !grantDefaults,
   })
   const current = steps[step]
     ? {
@@ -189,7 +191,7 @@ export function GrantForm({
     resolver: current
       ? (zodResolver(schemaForStep(current)) as Resolver<FormValues>)
       : undefined,
-    defaultValues: defaultValuesFor(steps, { contactId, recordId, opportunityId, ...(isFunderSignup ? funderPrefill(params) : {}) }),
+    defaultValues: defaultValuesFor(steps, { contactId, recordId, opportunityId, ...(isFunderSignup ? funderPrefill(params) : {}), ...grantDefaults }),
     mode: "onSubmit",
   })
 
@@ -201,6 +203,7 @@ export function GrantForm({
         recordId,
         opportunityId,
         ...values,
+        ...grantDefaults,
       }
       const fd = new FormData()
       fd.append("payload", JSON.stringify(body))

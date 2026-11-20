@@ -15,6 +15,7 @@ export default async function EmbedFormPage({
   const { slug } = await params
   const form = getForm(slug)
   if (!form) notFound()
+  if (slug === "grant-rfp") return <main className="p-8">Use the private Create Grant link in your funder approval email.</main>
 
   return (
     <main className="min-h-screen bg-transparent">
