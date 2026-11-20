@@ -1244,6 +1244,17 @@
       "title": "Org Form - Details",
       "fields": [
         {
+          "name": "isIndividual",
+          "label": "I am registering as",
+          "type": "dropdown",
+          "required": true,
+          "options": [
+            { "label": "An organization", "value": "no" },
+            { "label": "An individual", "value": "yes" }
+          ],
+          "multiple": false
+        },
+        {
           "name": "organizationName",
           "label": "Organization Name",
           "type": "text",

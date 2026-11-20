@@ -61,7 +61,7 @@ async function searchObject(schemaKey: string) {
       body: JSON.stringify({ locationId, page: 1, pageLimit: 100 }),
     }
   )
-  const records = (data.records || data.data || []) as GhlRecord[]
+  const records = (data.customObjectRecords || data.records || data.data || []) as GhlRecord[]
   return Array.isArray(records) ? records : []
 }
 
@@ -72,10 +72,17 @@ export async function loadLookups() {
     searchObject("custom_objects.vendors").catch(() => []),
     searchObject("custom_objects.projects").catch(() => []),
   ])
+  // Pending, rejected, and funder records stay out of the apply and hire lists.
+  const approvedSeekers = orgs.filter(
+    (rec) => rec.properties?.approval_status === "approved" && rec.properties?.party_role !== "funder",
+  )
+  const hireableVendors = vendors.filter(
+    (rec) => !["pending", "onboarding", "rejected", "inactive", "closed"].includes(String(rec.properties?.status || "").toLowerCase()),
+  )
   return {
-    organization: labels(orgs, ["organization_name", "name"]),
+    organization: labels(approvedSeekers, ["organization_name", "name"]),
     fundingSource: labels(funding, ["grant_name", "name"]),
-    vendor: labels(vendors, ["vendor_name", "name"]),
+    vendor: labels(hireableVendors, ["vendor_name", "name"]),
     project: labels(projects, ["project_name", "name"]),
   }
 }

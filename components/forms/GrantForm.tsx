@@ -65,7 +65,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import type { FormDef } from "@/lib/forms"
-import { formatReviewProcess, isHiddenField, LOOKUP_FIELD_NAMES, stepsFor, type FormField } from "@/lib/form-schema"
+import { formatReviewProcess, hiddenForValues, isHiddenField, LOOKUP_FIELD_NAMES, stepsFor, type FormField } from "@/lib/form-schema"
 import { defaultValuesFor, schemaForStep } from "@/lib/zod-form"
 import { cn } from "@/lib/utils"
 
@@ -189,7 +189,13 @@ export function GrantForm({
 
   const methods = useForm<FormValues>({
     resolver: current
-      ? (zodResolver(schemaForStep(current)) as Resolver<FormValues>)
+      ? ((values, context, options) =>
+          zodResolver(
+            schemaForStep({
+              ...current,
+              fields: current.fields.filter((field) => !hiddenForValues(form.slug, field.name, values)),
+            }),
+          )(values, context, options as never)) as Resolver<FormValues>
       : undefined,
     defaultValues: defaultValuesFor(steps, { contactId, recordId, opportunityId, ...(isFunderSignup ? funderPrefill(params) : {}), ...grantDefaults }),
     mode: "onSubmit",
@@ -223,8 +229,11 @@ export function GrantForm({
     methods.watch("isReimbursement") ||
     ""
 
+  const isIndividual = methods.watch("isIndividual")
+
   function visible(field: FormField) {
     if (isHiddenField(field)) return false
+    if (hiddenForValues(form.slug, field.name, { isIndividual })) return false
     if (form.slug === "grant-applicant-submit" && (field.name === "submitMode" || field.name === "whatDoYouWantToDo")) {
       return false
     }

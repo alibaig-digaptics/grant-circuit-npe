@@ -102,3 +102,29 @@ export function stepsFor(slug: string): FormStep[] {
     }))
     .filter((step) => step.fields.some((field) => !isHiddenField(field)))
 }
+
+const INDIVIDUAL_HIDDEN_FIELDS = new Set([
+  "organizationName",
+  "organizationType",
+  "ein",
+  "orgEmail",
+  "orgPhone",
+  "status501c3",
+  "dateEstablished",
+  "annualBudget",
+  "fiscalYearEnd",
+  "duns",
+  "uei",
+  "samRegistered",
+  "ownershipStatus",
+  "ownershipOther",
+  "ownershipCertified",
+  "ownershipCertAgency",
+  "ownershipCertUrl",
+  "ownershipCertFile",
+])
+
+/** An individual grant seeker has no organization details to give. */
+export function hiddenForValues(slug: string, fieldName: string, values: Record<string, unknown>): boolean {
+  return slug === "org-registration" && values.isIndividual === "yes" && INDIVIDUAL_HIDDEN_FIELDS.has(fieldName)
+}
