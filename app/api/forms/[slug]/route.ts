@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { approvedSeekerForEmail } from "@/lib/applicant-access"
 import { NOT_REGISTERED_MESSAGE, TEAM_MEMBER_MESSAGE, isDirectSubmit, isPrimaryContact } from "@/lib/applicant-rules"
+import { draftLink } from "@/lib/draft-link"
 import { sanitizeMilestones } from "@/lib/milestones"
 import { replaceMilestones } from "@/lib/milestone-store"
 import { authorizedGrantDetails, funderLocation } from "@/lib/funder-review"
@@ -74,6 +75,7 @@ export async function POST(
       return NextResponse.json({ error: "Your milestones could not be saved. Please try again." }, { status: 502 })
     }
     body.milestones = milestones
+    body.draftUrl = draftLink(new URL(request.url).origin, process.env.GF360_GHL_PRIVATE_KEY || "", String(body.email || ""), String(body.recordId || ""))
   }
   const url = webhookUrl(form)
 

@@ -34,3 +34,17 @@ test('only the primary contact submits directly; anyone approved may save', asyn
   assert.equal(isDirectSubmit(''), true)
   assert.equal(isDirectSubmit(undefined), true)
 })
+
+test('a draft link only opens for the email and grant it was made for', async () => {
+  const { draftLink, draftTokenValid, draftToken } = await import('../lib/draft-link.ts')
+  const secret = 'k'.repeat(40)
+  const link = new URL(draftLink('https://x.test/', secret, 'Lead@Example.org', 'g1'))
+  assert.equal(link.searchParams.get('email'), 'lead@example.org')
+  const token = link.searchParams.get('draft')
+  assert.equal(draftTokenValid(secret, 'lead@example.org', 'g1', token), true)
+  assert.equal(draftTokenValid(secret, 'other@example.org', 'g1', token), false)
+  assert.equal(draftTokenValid(secret, 'lead@example.org', 'g2', token), false)
+  assert.equal(draftTokenValid('', 'lead@example.org', 'g1', token), false)
+  assert.equal(draftTokenValid(secret, 'lead@example.org', 'g1', 'nope'), false)
+  assert.notEqual(draftToken(secret, 'a@b.co', 'g1'), draftToken(secret, 'a@b.co', 'g2'))
+})

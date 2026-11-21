@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery } from "@tanstack/react-query"
@@ -135,6 +135,8 @@ export function GrantForm({
   const [files, setFiles] = useState<Record<string, File[]>>({})
   const [milestones, setMilestones] = useState<Milestone[]>([])
   const [milestoneError, setMilestoneError] = useState<string | null>(null)
+  const draftToken = params.get("draft") || ""
+  const draftEmail = params.get("email") || ""
   const isApplication = form.slug === "grant-applicant-submit"
   const lookups = useQuery({
     queryKey: ["gc-lookups"],
@@ -205,6 +207,23 @@ export function GrantForm({
     defaultValues: defaultValuesFor(steps, { contactId, recordId, opportunityId, ...(isFunderSignup || form.slug === "org-registration" ? funderPrefill(params) : {}), ...grantDefaults }),
     mode: "onSubmit",
   })
+
+  // Reopening a saved draft from the email link brings back the milestones and the name.
+  useEffect(() => {
+    if (!isApplication || !draftToken || !draftEmail || !recordId) return
+    const query = new URLSearchParams({ recordId, email: draftEmail, draft: draftToken })
+    fetch(`/api/applicant-draft?${query}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { firstName?: string; lastName?: string; milestones?: Milestone[] } | null) => {
+        if (!data) return
+        methods.setValue("email", draftEmail)
+        if (data.firstName) methods.setValue("firstName", data.firstName)
+        if (data.lastName) methods.setValue("lastName", data.lastName)
+        if (data.milestones?.length) setMilestones(data.milestones)
+      })
+      .catch(() => undefined)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isApplication, draftToken, draftEmail, recordId])
 
   const mutation = useMutation({
     mutationFn: async (values: FormValues) => {
