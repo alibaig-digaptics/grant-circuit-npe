@@ -1,7 +1,7 @@
 import { funderGhl, funderLocation } from '@/lib/funder-review'
 import type { Milestone } from '@/lib/milestones'
 
-type Row = { id: string; properties: Record<string, unknown> }
+type Row = { id: string; createdAt?: string; properties: Record<string, unknown> }
 
 async function searchByApplicant(email: string): Promise<Row[]> {
   const data = await funderGhl('/objects/custom_objects.milestones/records/search', {
@@ -50,7 +50,9 @@ export async function replaceMilestones(input: { email: string; grantId: string;
 
 /** The milestones this person saved for this grant, in the order they were saved. */
 export async function loadMilestones(emailInput: string, grantId: string): Promise<Milestone[]> {
-  const rows = (await searchByApplicant(emailInput.trim().toLowerCase())).filter(row => String(row.properties.funding_source_id ?? '') === grantId)
+  const rows = (await searchByApplicant(emailInput.trim().toLowerCase()))
+    .filter(row => String(row.properties.funding_source_id ?? '') === grantId)
+    .sort((a, b) => String(a.createdAt ?? '').localeCompare(String(b.createdAt ?? '')))
   return rows.map(row => ({
     name: String(row.properties.milestone_name ?? ''),
     description: String(row.properties.milestone_description ?? ''),
