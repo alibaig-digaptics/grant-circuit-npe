@@ -189,14 +189,6 @@
       "title": "Applicant Form - Details",
       "fields": [
         {
-          "name": "organization",
-          "label": "Applicant Organization",
-          "type": "dropdown",
-          "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
           "name": "proposalNotes",
           "label": "Proposal summary",
           "type": "textarea",
