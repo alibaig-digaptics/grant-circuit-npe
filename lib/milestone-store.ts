@@ -26,7 +26,7 @@ export async function replaceMilestones(input: { email: string; grantId: string;
   const email = input.email.trim().toLowerCase()
   const old = (await searchByApplicant(email)).filter(row => String(row.properties.funding_source_id ?? '') === input.grantId)
   for (const row of old) {
-    const gone = await funderGhl(`/objects/custom_objects.milestones/records/${encodeURIComponent(row.id)}?locationId=${encodeURIComponent(funderLocation())}`, { method: 'DELETE' })
+    const gone = await funderGhl(`/objects/custom_objects.milestones/records/${encodeURIComponent(row.id)}`, { method: 'DELETE' })
     if (!gone) throw new Error('Could not replace the saved milestones.')
   }
   for (const item of input.milestones) {
