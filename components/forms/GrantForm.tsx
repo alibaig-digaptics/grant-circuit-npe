@@ -32,6 +32,7 @@ import { FormShell } from "@/components/forms/FormShell"
 import { FileDropZone } from "@/components/forms/FileDropZone"
 import { MilestoneRows } from "@/components/forms/MilestoneRows"
 import { sanitizeMilestones, type Milestone } from "@/lib/milestones"
+import { purposeForSlug } from "@/lib/lifecycle-access"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -135,6 +136,8 @@ export function GrantForm({
   const [files, setFiles] = useState<Record<string, File[]>>({})
   const [milestones, setMilestones] = useState<Milestone[]>([])
   const [milestoneError, setMilestoneError] = useState<string | null>(null)
+  const access = params.get("access") || ""
+  const lifecycle = purposeForSlug(form.slug)
   const draftToken = params.get("draft") || ""
   const draftEmail = params.get("email") || ""
   const isApplication = form.slug === "grant-applicant-submit"
@@ -180,10 +183,32 @@ export function GrantForm({
     },
     enabled: Boolean(recordId) && !isFunderSignup && !grantDefaults,
   })
+  const lifecycleContext = useQuery({
+    queryKey: ["gc-lifecycle", form.slug, recordId, access],
+    enabled: Boolean(lifecycle && recordId && access),
+    queryFn: async () => {
+      const query = new URLSearchParams({ slug: form.slug, recordId, access })
+      const res = await fetch(`/api/lifecycle-context?${query}`)
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string
+        grantName?: string
+        ceiling?: number
+        endDate?: string
+        requestedEnd?: string
+        requestedReason?: string
+        applicantOptions?: { label: string; value: string }[]
+      }
+      if (!res.ok) throw new Error(data.error || "This link is not valid.")
+      return data
+    },
+  })
   const current = steps[step]
     ? {
         ...steps[step],
         fields: steps[step].fields.map((field) => {
+          if (field.name === "applicant") {
+            return { ...field, options: lifecycleContext.data?.applicantOptions ?? [] }
+          }
           if (!LOOKUP_FIELD_NAMES.includes(field.name as (typeof LOOKUP_FIELD_NAMES)[number])) {
             return field
           }
@@ -235,6 +260,7 @@ export function GrantForm({
         ...values,
         ...grantDefaults,
         ...(isApplication ? { milestones } : {}),
+        ...(lifecycle ? { access } : {}),
       }
       const fd = new FormData()
       fd.append("payload", JSON.stringify(body))
@@ -764,6 +790,25 @@ export function GrantForm({
             })()}
           </div>
 
+          {lifecycle && (!access || lifecycleContext.isError) ? (
+            <Alert variant="destructive">
+              <AlertTitle>Use the link from your email</AlertTitle>
+              <AlertDescription>
+                {lifecycleContext.error instanceof Error ? lifecycleContext.error.message : "This page opens only from the link in your email."}
+              </AlertDescription>
+            </Alert>
+          ) : null}
+
+          {lifecycle && lifecycleContext.data ? (
+            <div className="rounded-xl border border-border/70 bg-muted/20 p-3 text-xs text-muted-foreground">
+              <p className="text-sm font-semibold text-foreground">{lifecycleContext.data.grantName}</p>
+              {lifecycleContext.data.ceiling ? <p>Grant amount up to ${lifecycleContext.data.ceiling.toLocaleString("en-US")}</p> : null}
+              {lifecycleContext.data.endDate ? <p>Current end date {lifecycleContext.data.endDate}</p> : null}
+              {lifecycleContext.data.requestedEnd ? <p>Requested new end date {lifecycleContext.data.requestedEnd}</p> : null}
+              {lifecycleContext.data.requestedReason ? <p>Reason: {lifecycleContext.data.requestedReason}</p> : null}
+            </div>
+          ) : null}
+
           {last && isApplication ? (
             <MilestoneRows value={milestones} onChange={setMilestones} error={milestoneError} />
           ) : null}
@@ -955,7 +1000,26 @@ function FormControl({
                   <span>{field.label}</span>
                   {field.required && <span className="text-primary font-bold">*</span>}
                 </FieldLabel>
-                {field.type === "textarea" ? (
+                {field.type === "multicheck" ? (
+                  <div className="grid grid-cols-2 gap-2 pt-0.5">
+                    {field.options.map((option) => {
+                      const optVal = typeof option === "string" ? option : option.value
+                      const optLabel = typeof option === "string" ? option : option.label
+                      const picked = String(rhf.value || "").split(",").filter(Boolean)
+                      return (
+                        <label key={optVal} className="flex cursor-pointer items-center gap-2 rounded-lg border border-border/60 px-2.5 py-2 text-xs sm:text-sm">
+                          <Checkbox
+                            checked={picked.includes(optVal)}
+                            onCheckedChange={(checked) =>
+                              rhf.onChange((checked ? [...picked, optVal] : picked.filter((item) => item !== optVal)).join(","))
+                            }
+                          />
+                          {optLabel}
+                        </label>
+                      )
+                    })}
+                  </div>
+                ) : field.type === "textarea" ? (
                   <Textarea
                     id={field.name}
                     rows={3}

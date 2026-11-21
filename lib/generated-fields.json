@@ -90,9 +90,18 @@
           "type": "dropdown",
           "required": true,
           "options": [
-            { "label": "Reviewed by Grant Circuit Team", "value": "Admin" },
-            { "label": "Reviewed by Internal Team", "value": "Internal" },
-            { "label": "Reviewed by Third Party", "value": "Third-Party" }
+            {
+              "label": "Reviewed by Grant Circuit Team",
+              "value": "Admin"
+            },
+            {
+              "label": "Reviewed by Internal Team",
+              "value": "Internal"
+            },
+            {
+              "label": "Reviewed by Third Party",
+              "value": "Third-Party"
+            }
           ],
           "multiple": false
         },
@@ -217,133 +226,51 @@
   ],
   "grant-management-requirements": [
     {
-      "title": "Grant Form - Identity",
+      "title": "Allocation - Award",
       "fields": [
         {
-          "name": "firstName",
-          "label": "First Name",
-          "type": "text",
-          "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "lastName",
-          "label": "Last Name",
-          "type": "text",
-          "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "email",
-          "label": "Email",
-          "type": "email",
-          "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "phone",
-          "label": "Phone",
-          "type": "tel",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "recordId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "opportunityId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        }
-      ]
-    },
-    {
-      "title": "Grant Form - Details",
-      "fields": [
-        {
-          "name": "organization",
-          "label": "Organization",
+          "name": "applicant",
+          "label": "Awarded applicant",
           "type": "dropdown",
           "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "grantName",
-          "label": "Grant Name",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "funderName",
-          "label": "Funder Name",
-          "type": "text",
-          "required": false,
           "options": [],
           "multiple": false
         },
         {
           "name": "awardAmount",
-          "label": "Award Amount",
+          "label": "Award amount",
           "type": "number",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },
         {
           "name": "startDate",
-          "label": "Start Date",
+          "label": "Start date",
           "type": "date",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },
         {
           "name": "endDate",
-          "label": "End Date",
+          "label": "End date",
           "type": "date",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },
         {
           "name": "budgetCategories",
-          "label": "Budget Categories",
-          "type": "dropdown",
-          "required": false,
+          "label": "Allowed budget categories",
+          "type": "multicheck",
+          "required": true,
           "options": [],
           "multiple": false
         },
         {
-          "name": "notes",
-          "label": "Notes (optional)",
-          "type": "textarea",
-          "required": false,
-          "options": [],
-          "multiple": false
-        }
-      ]
-    },
-    {
-      "title": "Grant Form - Extra Fields",
-      "fields": [
-        {
           "name": "progressReportCadence",
-          "label": "Progress Report Cadence",
+          "label": "Progress report cadence",
           "type": "dropdown",
           "required": false,
           "options": [],
@@ -351,12 +278,17 @@
         },
         {
           "name": "progressReportFormat",
-          "label": "Progress Report Format (what to submit)",
+          "label": "Progress report format (what to submit)",
           "type": "textarea",
           "required": false,
           "options": [],
           "multiple": false
-        },
+        }
+      ]
+    },
+    {
+      "title": "Allocation - Terms",
+      "fields": [
         {
           "name": "grantNumber",
           "label": "Grant Number",
@@ -457,6 +389,14 @@
           "name": "closeoutDeadline",
           "label": "Closeout Deadline",
           "type": "date",
+          "required": false,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes (optional)",
+          "type": "textarea",
           "required": false,
           "options": [],
           "multiple": false
@@ -864,73 +804,20 @@
   ],
   "grant-funder-auto-review": [
     {
-      "title": "Award Form - Open",
+      "title": "Review - Selection",
       "fields": [
         {
-          "name": "contactId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
+          "name": "applicant",
+          "label": "Selected applicant",
+          "type": "dropdown",
+          "required": true,
           "options": [],
           "multiple": false
         },
         {
-          "name": "recordId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "opportunityId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        }
-      ]
-    },
-    {
-      "title": "Award Confirm Page",
-      "fields": [
-        {
-          "name": "awardAmount",
-          "label": "Award Amount",
-          "type": "number",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "awardDate",
-          "label": "Award Date",
-          "type": "date",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "grantNumber",
-          "label": "Grant Number (optional)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "awardLetterUrl",
-          "label": "Award Letter URL (optional)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "grantAgreementUrl",
-          "label": "Grant Agreement URL (optional)",
-          "type": "text",
+          "name": "reviewerNotes",
+          "label": "Notes (optional)",
+          "type": "textarea",
           "required": false,
           "options": [],
           "multiple": false
@@ -940,37 +827,16 @@
   ],
   "grant-mark-awarded": [
     {
-      "title": "Award Form - Open",
+      "title": "Forward - Applicant",
       "fields": [
         {
-          "name": "contactId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
+          "name": "applicant",
+          "label": "Applicant to send to the funder",
+          "type": "dropdown",
+          "required": true,
           "options": [],
           "multiple": false
         },
-        {
-          "name": "recordId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "opportunityId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        }
-      ]
-    },
-    {
-      "title": "Award Confirm Page",
-      "fields": [
         {
           "name": "staffNotes",
           "label": "Staff notes (optional)",
@@ -1233,8 +1099,14 @@
           "type": "dropdown",
           "required": true,
           "options": [
-            { "label": "An organization", "value": "no" },
-            { "label": "An individual", "value": "yes" }
+            {
+              "label": "An organization",
+              "value": "no"
+            },
+            {
+              "label": "An individual",
+              "value": "yes"
+            }
           ],
           "multiple": false
         },
@@ -1445,20 +1317,120 @@
     {
       "title": "Your info",
       "fields": [
-        { "name": "firstName", "label": "First Name", "type": "text", "required": true, "options": [], "multiple": false },
-        { "name": "lastName", "label": "Last Name", "type": "text", "required": true, "options": [], "multiple": false },
-        { "name": "email", "label": "Email", "type": "email", "required": true, "options": [], "multiple": false },
-        { "name": "phone", "label": "Phone", "type": "tel", "required": false, "options": [], "multiple": false }
+        {
+          "name": "firstName",
+          "label": "First Name",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "lastName",
+          "label": "Last Name",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "email",
+          "label": "Email",
+          "type": "email",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "phone",
+          "label": "Phone",
+          "type": "tel",
+          "required": false,
+          "options": [],
+          "multiple": false
+        }
       ]
     },
     {
       "title": "Organization",
       "fields": [
-        { "name": "organizationName", "label": "Organization Name", "type": "text", "required": true, "options": [], "multiple": false },
-        { "name": "organizationType", "label": "Organization Type", "type": "dropdown", "required": false, "options": [{"label":"Fiscal Sponsor","value":"fiscal_sponsor"},{"label":"Community Foundation","value":"community_foundation"},{"label":"Faith-Based Organization","value":"faithbased_organization"},{"label":"University/Research Institution","value":"universityresearch_institution"},{"label":"Government Agency","value":"government_agency"},{"label":"501(c)(3) Nonprofit","value":"501c3_nonprofit"},{"label":"501(c)(4) Social Welfare","value":"501c4_social_welfare"},{"label":"501(c)(6) Trade Association","value":"501c6_trade_association"},{"label":"LLC (Fiscal Sponsoree)","value":"llc_fiscal_sponsoree"}], "multiple": false },
-        { "name": "ein", "label": "EIN", "type": "text", "required": true, "options": [], "multiple": false },
-        { "name": "website", "label": "Website", "type": "text", "required": false, "options": [], "multiple": false },
-        { "name": "mission", "label": "Mission Statement", "type": "textarea", "required": false, "options": [], "multiple": false }
+        {
+          "name": "organizationName",
+          "label": "Organization Name",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "organizationType",
+          "label": "Organization Type",
+          "type": "dropdown",
+          "required": false,
+          "options": [
+            {
+              "label": "Fiscal Sponsor",
+              "value": "fiscal_sponsor"
+            },
+            {
+              "label": "Community Foundation",
+              "value": "community_foundation"
+            },
+            {
+              "label": "Faith-Based Organization",
+              "value": "faithbased_organization"
+            },
+            {
+              "label": "University/Research Institution",
+              "value": "universityresearch_institution"
+            },
+            {
+              "label": "Government Agency",
+              "value": "government_agency"
+            },
+            {
+              "label": "501(c)(3) Nonprofit",
+              "value": "501c3_nonprofit"
+            },
+            {
+              "label": "501(c)(4) Social Welfare",
+              "value": "501c4_social_welfare"
+            },
+            {
+              "label": "501(c)(6) Trade Association",
+              "value": "501c6_trade_association"
+            },
+            {
+              "label": "LLC (Fiscal Sponsoree)",
+              "value": "llc_fiscal_sponsoree"
+            }
+          ],
+          "multiple": false
+        },
+        {
+          "name": "ein",
+          "label": "EIN",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "website",
+          "label": "Website",
+          "type": "text",
+          "required": false,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "mission",
+          "label": "Mission Statement",
+          "type": "textarea",
+          "required": false,
+          "options": [],
+          "multiple": false
+        }
       ]
     }
   ],
@@ -1881,51 +1853,6 @@
     }
   ],
   "extension-review": [
-    {
-      "title": "Extension Review - Your info",
-      "fields": [
-        {
-          "name": "firstName",
-          "label": "First Name",
-          "type": "text",
-          "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "lastName",
-          "label": "Last Name",
-          "type": "text",
-          "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "email",
-          "label": "Email",
-          "type": "email",
-          "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "recordId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "contactId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        }
-      ]
-    },
     {
       "title": "Extension Review - Decision",
       "fields": [

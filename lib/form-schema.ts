@@ -12,6 +12,7 @@ export type FieldType =
   | "file"
   | "date"
   | "checkbox"
+  | "multicheck"
 
 export type FormFieldOption = string | { label: string; value: string }
 
@@ -46,6 +47,8 @@ export function formatReviewProcess(val?: string): string {
   return REVIEW_PROCESS_OPTIONS[0].label
 }
 
+const BUDGET_CATEGORY_OPTIONS = ["personnel", "events", "supplies", "travel", "marketing", "consulting", "equipment", "other"].map((value) => ({ label: value[0].toUpperCase() + value.slice(1), value }))
+
 const OPTIONS: Record<string, (string | { label: string; value: string })[]> = {
   numberOfAwards: ["Undetermined", "1", "2"],
   reviewProcess: REVIEW_PROCESS_OPTIONS,
@@ -65,7 +68,8 @@ const OPTIONS: Record<string, (string | { label: string; value: string })[]> = {
     "Other",
   ],
   status: ["Planning", "Active", "On Hold", "Completed", "Cancelled"],
-  progressReportCadence: ["None", "Every 3 months", "Every 6 months", "Every 8 months"],
+  progressReportCadence: ["Every 3 months", "Every 6 months", "Every 8 months"],
+  budgetCategories: BUDGET_CATEGORY_OPTIONS,
 }
 
 export function isHiddenField(field: FormField): boolean {
