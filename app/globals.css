@@ -49,7 +49,7 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Grant Circuit teal — one hue (195), from the Initiative on Islam and Medicine logo emblem.
+/* Grant Circuit teal — one hue (195), from the logo emblem.
    --brand-teal is the exact sampled logo green (#00a0a0, 3.2:1 on white) for decorative accents.
    --primary is that same hue darkened to clear WCAG AA with white text (5.2:1). */
 :root {

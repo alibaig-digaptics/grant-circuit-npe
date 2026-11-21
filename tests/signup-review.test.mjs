@@ -44,8 +44,9 @@ test('Create Grant offers Admin, Third-Party, and Self with generic stored keys'
   assert.match(src, /label: "Self", value: "self"/)
 })
 
-test('no screen names the old organization in the shared header or footer', () => {
-  for (const file of ['../components/common/Header.tsx', '../components/common/Footer.tsx']) {
-    assert.doesNotMatch(readFileSync(new URL(file, import.meta.url), 'utf8'), /Medicine|medicineandislam/i)
+test('no screen names the old organization and the footer points to the new site', () => {
+  for (const file of ['../components/common/Header.tsx', '../components/common/Footer.tsx', '../app/globals.css', '../components/forms/GrantForm.tsx']) {
+    assert.doesNotMatch(readFileSync(new URL(file, import.meta.url), 'utf8'), /Medicine|medicineandislam|\bIIM\b|Initiative on Islam/i)
   }
+  assert.match(readFileSync(new URL('../components/common/Footer.tsx', import.meta.url), 'utf8'), /nonprofitselevate\.org/)
 })

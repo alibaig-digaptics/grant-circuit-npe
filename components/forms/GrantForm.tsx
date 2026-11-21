@@ -535,7 +535,7 @@ export function GrantForm({
           {rd?.summary ? (
             <div className="pt-0.5 text-xs text-muted-foreground leading-relaxed">
               <span className="font-semibold text-foreground block mb-0.5">Grant Summary:</span>
-              <span>{rd.summary.replace(/Reviewed by IIM Team/gi, "Reviewed by Grant Circuit Team")}</span>
+              <span>{rd.summary}</span>
             </div>
           ) : null}
           {showApplicantPackage && rd?.proposalSummary ? (
