@@ -24,7 +24,7 @@ export default function HomePage() {
                 {group.label}
               </h2>
               <ul className="divide-y divide-border rounded-xl border border-border">
-                {FORMS.filter((f) => f.audience === group.key).map((form) => (
+                {FORMS.filter((f) => f.audience === group.key && !f.slug.startsWith("project-")).map((form) => (
                   <li key={form.slug}>
                     <Link
                       href={`/forms/${form.slug}`}

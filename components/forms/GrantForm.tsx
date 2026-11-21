@@ -30,6 +30,8 @@ import {
 import { funderAutocomplete, funderPrefill } from "@/lib/funder-prefill"
 import { FormShell } from "@/components/forms/FormShell"
 import { FileDropZone } from "@/components/forms/FileDropZone"
+import { MilestoneRows } from "@/components/forms/MilestoneRows"
+import { sanitizeMilestones, type Milestone } from "@/lib/milestones"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -131,6 +133,9 @@ export function GrantForm({
 
   const [step, setStep] = useState(0)
   const [files, setFiles] = useState<Record<string, File[]>>({})
+  const [milestones, setMilestones] = useState<Milestone[]>([])
+  const [milestoneError, setMilestoneError] = useState<string | null>(null)
+  const isApplication = form.slug === "grant-applicant-submit"
   const lookups = useQuery({
     queryKey: ["gc-lookups"],
     enabled: !isFunderSignup && !grantDefaults,
@@ -210,6 +215,7 @@ export function GrantForm({
         opportunityId,
         ...values,
         ...grantDefaults,
+        ...(isApplication ? { milestones } : {}),
       }
       const fd = new FormData()
       fd.append("payload", JSON.stringify(body))
@@ -739,6 +745,16 @@ export function GrantForm({
             })()}
           </div>
 
+          {last && isApplication ? (
+            <MilestoneRows value={milestones} onChange={setMilestones} error={milestoneError} />
+          ) : null}
+
+          {last && isApplication ? (
+            <p className="text-xs text-muted-foreground">
+              Save for Later keeps a draft. Only your organization&apos;s primary contact can submit directly. If you are on the team, save for later and the primary contact will review and submit it.
+            </p>
+          ) : null}
+
           {mutation.isError ? (
             <Alert variant="destructive">
               <AlertTitle>Could not send</AlertTitle>
@@ -773,7 +789,9 @@ export function GrantForm({
                   onClick={async () => {
                     methods.setValue("submitMode", "Save for Later")
                     const valid = await methods.trigger()
-                    if (valid) {
+                    const checked = sanitizeMilestones(milestones)
+                    setMilestoneError(checked.error)
+                    if (valid && !checked.error) {
                       mutation.mutate({ ...methods.getValues(), submitMode: "Save for Later" })
                     }
                   }}
@@ -793,7 +811,9 @@ export function GrantForm({
                   onClick={async () => {
                     methods.setValue("submitMode", "Submit Now")
                     const valid = await methods.trigger()
-                    if (valid) {
+                    const checked = sanitizeMilestones(milestones)
+                    setMilestoneError(checked.error)
+                    if (valid && !checked.error) {
                       mutation.mutate({ ...methods.getValues(), submitMode: "Submit Now" })
                     }
                   }}

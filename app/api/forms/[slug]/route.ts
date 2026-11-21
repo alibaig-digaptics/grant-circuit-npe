@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { approvedSeekerForEmail } from "@/lib/applicant-access"
-import { NOT_REGISTERED_MESSAGE } from "@/lib/applicant-rules"
+import { NOT_REGISTERED_MESSAGE, TEAM_MEMBER_MESSAGE, isDirectSubmit, isPrimaryContact } from "@/lib/applicant-rules"
+import { sanitizeMilestones } from "@/lib/milestones"
+import { replaceMilestones } from "@/lib/milestone-store"
 import { authorizedGrantDetails, funderLocation } from "@/lib/funder-review"
 import { getForm, webhookUrl } from "@/lib/forms"
 import { uploadGhlMedia } from "@/lib/ghl-media"
@@ -42,6 +44,9 @@ export async function POST(
     return NextResponse.json({ error: "Unknown form" }, { status: 404 })
   }
 
+  if (slug.startsWith("project-")) {
+    return NextResponse.json({ error: "Projects are no longer part of this platform. Use milestones on the application." }, { status: 410 })
+  }
   if (slug === "org-activate" || slug === "vendor-review") {
     return NextResponse.json({ error: "Use the review link in your staff email." }, { status: 403 })
   }
@@ -57,6 +62,18 @@ export async function POST(
     // An applicant applies as their own registered organization, never as someone else's.
     body.organization = String(seeker.properties.organization_name || "")
     body.organizationId = seeker.id
+    // Team members may save a draft. Only the primary contact submits directly.
+    if (isDirectSubmit(body.submitMode) && !isPrimaryContact(seeker, String(body.email || ""))) {
+      return NextResponse.json({ error: TEAM_MEMBER_MESSAGE }, { status: 403 })
+    }
+    const { milestones, error } = sanitizeMilestones(body.milestones)
+    if (error) return NextResponse.json({ error }, { status: 400 })
+    if (body.milestones !== undefined) try {
+      await replaceMilestones({ email: String(body.email || ""), grantId: String(body.recordId || ""), organizationId: seeker.id, milestones })
+    } catch {
+      return NextResponse.json({ error: "Your milestones could not be saved. Please try again." }, { status: 502 })
+    }
+    body.milestones = milestones
   }
   const url = webhookUrl(form)
 

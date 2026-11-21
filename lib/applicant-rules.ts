@@ -13,3 +13,18 @@ export function isApprovedSeeker(record: OrgRecord | null | undefined) {
 export function pickApprovedSeeker(records: (OrgRecord | null | undefined)[]) {
   return records.find(isApprovedSeeker) ?? null
 }
+
+export const TEAM_MEMBER_MESSAGE =
+  "Only your organization's primary contact can submit an application directly. Choose Save for Later. The primary contact can then review it and submit it."
+
+/** The primary contact is the person whose email the organization registered with. Others on the team may only save for later. */
+export function isPrimaryContact(record: OrgRecord | null | undefined, emailInput: string) {
+  const registered = String(record?.properties?.email ?? '').trim().toLowerCase()
+  return Boolean(registered) && registered === emailInput.trim().toLowerCase()
+}
+
+/** Save for Later is open to anyone approved. Submitting is not. n8n treats any mode that is not a save as a submit, so a blank mode counts as one too. */
+export function isDirectSubmit(submitMode: unknown) {
+  const mode = String(submitMode ?? '').trim().toLowerCase()
+  return !/save|later|draft|incomplete/.test(mode)
+}
