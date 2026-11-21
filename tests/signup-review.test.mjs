@@ -37,16 +37,27 @@ test('each party has accept, changes, and reject decisions that map to what n8n 
   assert.equal(PARTIES.vendor.decisions[1].send, 'Request W9')
 })
 
-test('Create Grant offers Admin, Third-Party, and Self with generic stored keys', () => {
-  const src = readFileSync(new URL('../lib/form-schema.ts', import.meta.url), 'utf8')
-  assert.match(src, /label: "Admin", value: "admin"/)
-  assert.match(src, /label: "Third-Party", value: "thirdparty"/)
-  assert.match(src, /label: "Self", value: "self"/)
-})
-
 test('no screen names the old organization and the footer points to the new site', () => {
   for (const file of ['../components/common/Header.tsx', '../components/common/Footer.tsx', '../app/globals.css', '../components/forms/GrantForm.tsx']) {
     assert.doesNotMatch(readFileSync(new URL(file, import.meta.url), 'utf8'), /Medicine|medicineandislam|\bIIM\b|Initiative on Islam/i)
   }
   assert.match(readFileSync(new URL('../components/common/Footer.tsx', import.meta.url), 'utf8'), /nonprofitselevate\.org/)
+})
+
+test('only an approved, active grant seeker may apply', async () => {
+  const { isApprovedSeeker, pickApprovedSeeker } = await import('../lib/applicant-rules.ts')
+  const ok = { id: 'a', properties: { party_role: 'seeker', approval_status: 'approved', status: 'active' } }
+  assert.equal(isApprovedSeeker(ok), true)
+  for (const patch of [{ party_role: 'funder' }, { approval_status: 'pending' }, { approval_status: 'rejected' }, { status: 'onboarding' }]) {
+    assert.equal(isApprovedSeeker({ id: 'b', properties: { ...ok.properties, ...patch } }), false)
+  }
+  assert.equal(isApprovedSeeker(null), false)
+  assert.equal(pickApprovedSeeker([{ id: 'c', properties: { party_role: 'seeker', approval_status: 'pending', status: 'onboarding' } }, ok]).id, 'a')
+})
+
+test('review labels are client wording over generic stored keys', () => {
+  const src = readFileSync(new URL('../lib/form-schema.ts', import.meta.url), 'utf8')
+  assert.match(src, /label: "By Grant Circuit Team", value: "admin"/)
+  assert.match(src, /value: "thirdparty"/)
+  assert.match(src, /value: "self"/)
 })

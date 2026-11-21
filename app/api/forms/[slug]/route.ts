@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server"
+import { approvedSeekerForEmail } from "@/lib/applicant-access"
+import { NOT_REGISTERED_MESSAGE } from "@/lib/applicant-rules"
 import { authorizedGrantDetails, funderLocation } from "@/lib/funder-review"
 import { getForm, webhookUrl } from "@/lib/forms"
 import { uploadGhlMedia } from "@/lib/ghl-media"
@@ -49,6 +51,13 @@ export async function POST(
     return funder ? { ...input, ...funder, locationId: funderLocation() } : null
   } : undefined)
   if (!body) return NextResponse.json({ error: "Use the private Create Grant link from your approval email." }, { status: 403 })
+  if (slug === "grant-applicant-submit") {
+    const seeker = await approvedSeekerForEmail(String(body.email || "")).catch(() => null)
+    if (!seeker) return NextResponse.json({ error: NOT_REGISTERED_MESSAGE }, { status: 403 })
+    // An applicant applies as their own registered organization, never as someone else's.
+    body.organization = String(seeker.properties.organization_name || "")
+    body.organizationId = seeker.id
+  }
   const url = webhookUrl(form)
 
   const res = await fetch(url, {

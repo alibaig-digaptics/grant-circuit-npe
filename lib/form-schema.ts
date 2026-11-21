@@ -32,17 +32,18 @@ export type FormStep = {
 export const FORM_STEPS = generated as Record<string, FormStep[]>
 
 export const REVIEW_PROCESS_OPTIONS = [
-  { label: "Admin", value: "admin" },
-  { label: "Third-Party", value: "thirdparty" },
-  { label: "Self", value: "self" },
+  // Client-facing labels. A client may rename them. The stored keys stay admin, thirdparty, self.
+  { label: "By Grant Circuit Team", value: "admin" },
+  { label: "By a Third Party", value: "thirdparty" },
+  { label: "By the Funder's Own Team", value: "self" },
 ]
 
 export function formatReviewProcess(val?: string): string {
   const normalized = String(val || "").trim().toLowerCase().replace(/[^a-z]/g, "")
   if (!normalized) return ""
-  if (normalized === "thirdparty" || normalized.includes("third")) return "Third-Party"
-  if (normalized === "self" || normalized === "internal") return "Self"
-  return "Admin"
+  if (normalized === "thirdparty" || normalized.includes("third")) return REVIEW_PROCESS_OPTIONS[1].label
+  if (normalized === "self" || normalized === "internal") return REVIEW_PROCESS_OPTIONS[2].label
+  return REVIEW_PROCESS_OPTIONS[0].label
 }
 
 const OPTIONS: Record<string, (string | { label: string; value: string })[]> = {

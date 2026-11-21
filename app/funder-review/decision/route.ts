@@ -41,10 +41,24 @@ export async function POST(request: Request) {
     if (contact.tags?.includes(tag.tags[0]) && !await funderGhl(endpoint + '/tags', { method: 'DELETE', body: JSON.stringify(tag) })) return redirect('failed')
     const updated = await funderRecordRequest(id, { ...state, funder_review_token_hash: '', create_grant_token_hash: access ? createHash('sha256').update(access).digest('hex') : '' })
     if (updated?.properties.approval_status !== state.approval_status) return redirect('failed')
+    if (state.approval_status === 'rejected') await moveToRejected(contact.id).catch(() => null)
     try {
       const enrolled = await funderGhl(endpoint + '/tags', { method: 'POST', body: JSON.stringify(tag) })
       if (enrolled?.tags?.includes(tag.tags[0])) return redirect(state.approval_status)
     } catch { /* the decision is already saved; do not claim the email was queued */ }
     return redirect(`${state.approval_status}-notify-failed`)
   } catch { return redirect('failed') }
+}
+
+/** A rejected funder's signup card leaves New Funders and lands in Rejected. Stages are found by name at run time. */
+async function moveToRejected(contactId: string) {
+  const location = funderLocation()
+  const pipelines = await funderGhl(`/opportunities/pipelines?locationId=${encodeURIComponent(location)}`)
+  const pipeline = pipelines?.pipelines?.find((p: { name: string }) => p.name === 'Platform Signups')
+  const stage = (name: string) => pipeline?.stages?.find((s: { name: string }) => s.name === name)?.id
+  const rejected = stage('Rejected'), newFunders = stage('New Funders')
+  if (!pipeline || !rejected || !newFunders) return
+  const found = await funderGhl('/opportunities/search?' + new URLSearchParams({ location_id: location, pipeline_id: pipeline.id, contact_id: contactId }))
+  const card = found?.opportunities?.find((o: { pipelineStageId: string }) => o.pipelineStageId === newFunders)
+  if (card) await funderGhl(`/opportunities/${encodeURIComponent(card.id)}`, { method: 'PUT', body: JSON.stringify({ pipelineStageId: rejected, status: 'lost' }) })
 }
