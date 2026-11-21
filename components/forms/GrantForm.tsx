@@ -137,6 +137,7 @@ export function GrantForm({
   const [milestones, setMilestones] = useState<Milestone[]>([])
   const [milestoneError, setMilestoneError] = useState<string | null>(null)
   const access = params.get("access") || ""
+  const awardParam = params.get("award") || ""
   const lifecycle = purposeForSlug(form.slug)
   const draftToken = params.get("draft") || ""
   const draftEmail = params.get("email") || ""
@@ -184,10 +185,10 @@ export function GrantForm({
     enabled: Boolean(recordId) && !isFunderSignup && !grantDefaults,
   })
   const lifecycleContext = useQuery({
-    queryKey: ["gc-lifecycle", form.slug, recordId, access],
+    queryKey: ["gc-lifecycle", form.slug, recordId, access, awardParam],
     enabled: Boolean(lifecycle && recordId && access),
     queryFn: async () => {
-      const query = new URLSearchParams({ slug: form.slug, recordId, access })
+      const query = new URLSearchParams({ slug: form.slug, recordId, access, award: awardParam })
       const res = await fetch(`/api/lifecycle-context?${query}`)
       const data = (await res.json().catch(() => ({}))) as {
         error?: string
@@ -260,7 +261,7 @@ export function GrantForm({
         ...values,
         ...grantDefaults,
         ...(isApplication ? { milestones } : {}),
-        ...(lifecycle ? { access } : {}),
+        ...(lifecycle ? { access, award: awardParam } : {}),
       }
       const fd = new FormData()
       fd.append("payload", JSON.stringify(body))

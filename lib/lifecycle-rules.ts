@@ -96,45 +96,83 @@ export function daysBetween(from: string, to: string) {
 }
 
 export type GrantProps = Record<string, unknown>
+export type Award = {
+  id: string
+  applicantId: string
+  email: string
+  name: string
+  organization: string
+  status: string
+  endDate: string
+  extensionStatus: string
+  requestedEnd: string
+  extensionReason: string
+}
 export type SubmitResult = { error: string; status: number } | { error: null; extra: Record<string, unknown> }
 
 const refuse = (error: string, status = 400): SubmitResult => ({ error, status })
-
 const text = (value: unknown) => String(value ?? '').trim()
 const number = (value: unknown) => Number(value ?? 0) || 0
+
+/** An award record as the rules need it. */
+export function awardFromRecord(record: { id: string; properties: Record<string, unknown> }): Award {
+  const p = record.properties
+  return {
+    id: record.id,
+    applicantId: text(p.applicant_id),
+    email: text(p.applicant_email).toLowerCase(),
+    name: text(p.applicant_name),
+    organization: text(p.applicant_organization),
+    status: text(p.status),
+    endDate: text(p.end_date).slice(0, 10),
+    extensionStatus: text(p.extension_status),
+    requestedEnd: text(p.extension_requested_end_date).slice(0, 10),
+    extensionReason: text(p.extension_reason),
+  }
+}
+
+/** How many awards a grant may make. Undetermined has no limit. */
+export function awardLimit(numberOfAwards: unknown) {
+  const n = Number(text(numberOfAwards))
+  return Number.isInteger(n) && n > 0 ? n : Infinity
+}
+
+const liveAwards = (awards: Award[]) => awards.filter(item => item.status !== 'cancelled')
 
 function pickApplicant(list: Applicant[], chosen: unknown) {
   return list.find(item => item.id === text(chosen)) ?? null
 }
 
-function applicantFields(applicant: Applicant) {
-  return { applicantId: applicant.id, applicantEmail: applicant.email, applicantName: applicant.name, applicantOrganization: applicant.organization }
+function applicantFields(a: { id?: string; applicantId?: string; name: string; email: string; organization: string }) {
+  return { applicantId: a.applicantId ?? a.id ?? '', applicantEmail: a.email, applicantName: a.name, applicantOrganization: a.organization }
 }
 
 /**
- * Checks a lifecycle form against the grant record before anything is sent to n8n,
+ * Checks a lifecycle form against the grant and its awards before anything is sent to n8n,
  * and returns the trusted values n8n should use instead of what the form typed.
  */
-export function evaluateLifecycleSubmit(slug: string, grant: GrantProps, body: Record<string, unknown>, today: string): SubmitResult {
+export function evaluateLifecycleSubmit(slug: string, grant: GrantProps, body: Record<string, unknown>, today: string, awards: Award[] = []): SubmitResult {
   const method = text(grant.review_method) || 'admin'
-  const status = text(grant.status)
-  const base = { grantName: text(grant.grant_name), reviewMethod: method, currentEnd: text(grant.end_date).slice(0, 10), today }
+  const base = { grantName: text(grant.grant_name), reviewMethod: method, today }
+  if (['cancelled'].includes(text(grant.listing_status))) return refuse('This grant was cancelled.')
 
   if (slug === 'grant-mark-awarded' || slug === 'grant-funder-auto-review') {
     const adminReview = slug === 'grant-mark-awarded'
     if (adminReview && method !== 'admin') return refuse('This grant is not reviewed by the admin team.')
     if (!adminReview && method === 'admin') return refuse('This grant is reviewed by the admin team, who forward applicants to the funder.')
-    if (['awarded', 'active', 'closed', 'cancelled'].includes(status)) return refuse('This grant has already been awarded or closed.')
     const applicant = pickApplicant(parseApplicants(grant.applicants), body.applicant)
     if (!applicant) return refuse('Choose an applicant.')
+    if (liveAwards(awards).some(item => item.applicantId === applicant.id)) return refuse('This applicant was already awarded.')
     if (parseApplicants(grant.vetted_applicants).some(item => item.id === applicant.id)) return refuse('This applicant was already sent to the funder.')
     return { error: null, extra: { ...base, ...applicantFields(applicant) } }
   }
 
   if (slug === 'grant-management-requirements') {
-    if (['awarded', 'active', 'closed', 'cancelled'].includes(status) || text(grant.awarded_applicant)) return refuse('This grant has already been awarded.')
     const applicant = pickApplicant(parseApplicants(grant.vetted_applicants), body.applicant)
     if (!applicant) return refuse('Choose one of the vetted applicants.')
+    if (liveAwards(awards).some(item => item.applicantId === applicant.id)) return refuse('This applicant was already awarded.')
+    const limit = awardLimit(grant.number_of_awards)
+    if (liveAwards(awards).length >= limit) return refuse('All of the awards for this grant were already given.')
     const problem = allocationError({
       ceiling: number(grant.award_amount),
       amount: number(body.awardAmount),
@@ -153,40 +191,42 @@ export function evaluateLifecycleSubmit(slug: string, grant: GrantProps, body: R
         awardStage: awardStage(text(body.startDate), today),
         cadenceMonths: cadenceMonths(body.progressReportCadence),
         categories: parseCategories(body.budgetCategories),
+        limitReached: liveAwards(awards).length + 1 >= limit,
       },
     }
   }
 
+  const award = awards.find(item => item.id === text(body.award)) ?? null
+
   if (slug === 'apply-extension') {
-    const awarded = parseApplicants([safeJson(grant.awarded_applicant)])[0]
-    if (!awarded || text(body.email).toLowerCase() !== awarded.email) return refuse('Only the seeker who was awarded this grant can ask for an extension.', 403)
-    if (status !== 'active' && status !== 'awarded') return refuse('This grant is not open for an extension request.')
-    if (text(grant.extension_status) === 'requested') return refuse('An extension request is already waiting for the funder.')
-    const problem = extensionRequestError({ currentEnd: base.currentEnd, requestedEnd: body.requestedEndDate })
+    if (!award || award.status === 'cancelled') return refuse('We could not find your award for this grant.', 403)
+    if (text(body.email).toLowerCase() !== award.email) return refuse('Only the seeker who was awarded this grant can ask for an extension.', 403)
+    if (award.status !== 'active' && award.status !== 'awarded') return refuse('This award is not open for an extension request.')
+    if (award.extensionStatus === 'requested') return refuse('An extension request is already waiting for the funder.')
+    const problem = extensionRequestError({ currentEnd: award.endDate, requestedEnd: body.requestedEndDate })
     if (problem) return refuse(problem)
-    return { error: null, extra: { ...base, ...applicantFields(awarded) } }
+    return { error: null, extra: { ...base, ...applicantFields(award), awardId: award.id, currentEnd: award.endDate } }
   }
 
   if (slug === 'extension-review') {
-    if (text(grant.extension_status) !== 'requested') return refuse('There is no extension request waiting for a decision.')
-    const awarded = parseApplicants([safeJson(grant.awarded_applicant)])[0]
-    if (!awarded) return refuse('This grant has no awarded applicant.')
+    if (!award) return refuse('We could not find this award.', 403)
+    if (award.extensionStatus !== 'requested') return refuse('There is no extension request waiting for a decision.')
     const decision = /deny|reject/i.test(text(body.extensionDecision)) ? 'deny' : /approve/i.test(text(body.extensionDecision)) ? 'approve' : ''
     if (!decision) return refuse('Choose approve or deny.')
-    const requestedEnd = text(grant.extension_requested_end_date).slice(0, 10)
     let approved: string | null = null
     if (decision === 'approve') {
-      const result = approvedEndDate({ requestedEnd, newEnd: body.newEndDate, currentEnd: base.currentEnd })
+      const result = approvedEndDate({ requestedEnd: award.requestedEnd, newEnd: body.newEndDate, currentEnd: award.endDate })
       if (result.error) return refuse(result.error)
       approved = result.date
     }
-    return { error: null, extra: { ...base, ...applicantFields(awarded), decision, requestedEnd, approvedEnd: approved } }
+    return { error: null, extra: { ...base, ...applicantFields(award), awardId: award.id, currentEnd: award.endDate, decision, requestedEnd: award.requestedEnd, approvedEnd: approved } }
+  }
+
+  if (slug === 'progress-report') {
+    if (!award || award.status !== 'active') return refuse('This award is not open for a progress report.', 403)
+    if (!text(body.reportNarrative)) return refuse('Write a short summary of your progress.')
+    return { error: null, extra: { ...base, ...applicantFields(award), awardId: award.id } }
   }
 
   return { error: null, extra: {} }
-}
-
-function safeJson(value: unknown) {
-  if (typeof value !== 'string') return value
-  try { return JSON.parse(value || 'null') } catch { return null }
 }

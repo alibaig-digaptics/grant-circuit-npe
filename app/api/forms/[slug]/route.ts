@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 import { approvedSeekerForEmail } from "@/lib/applicant-access"
 import { NOT_REGISTERED_MESSAGE, TEAM_MEMBER_MESSAGE, isDirectSubmit, isPrimaryContact } from "@/lib/applicant-rules"
-import { lifecycleTokenValid, purposeForSlug } from "@/lib/lifecycle-access"
+import { lifecycleTokenValid, purposeForSlug, scopeFor } from "@/lib/lifecycle-access"
+import { loadAwards } from "@/lib/award-store"
 import { evaluateLifecycleSubmit, todayInZone } from "@/lib/lifecycle-rules"
 import { loadGrantProps } from "@/lib/grant-record"
 import { draftLink } from "@/lib/draft-link"
@@ -63,12 +64,13 @@ export async function POST(
   const purpose = purposeForSlug(slug)
   if (purpose) {
     const grantId = String(body.recordId || "")
-    if (!lifecycleTokenValid(process.env.GF360_GHL_PRIVATE_KEY || "", purpose, grantId, String(body.access || ""))) {
+    if (!lifecycleTokenValid(process.env.GF360_GHL_PRIVATE_KEY || "", purpose, scopeFor(purpose, grantId, String(body.award || "")), String(body.access || ""))) {
       return NextResponse.json({ error: "This link is not valid. Use the link from your email." }, { status: 403 })
     }
     const grant = await loadGrantProps(grantId)
     if (!grant) return NextResponse.json({ error: "Grant not found." }, { status: 404 })
-    const checked = evaluateLifecycleSubmit(slug, grant, body, todayInZone())
+    const awards = await loadAwards(grantId)
+    const checked = evaluateLifecycleSubmit(slug, grant, body, todayInZone(), awards)
     if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
     delete body.access
     Object.assign(body, checked.extra)

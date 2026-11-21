@@ -785,9 +785,9 @@
       "fields": [
         {
           "name": "reportNarrative",
-          "label": "Progress report narrative",
+          "label": "Progress summary",
           "type": "textarea",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },

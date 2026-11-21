@@ -63,9 +63,33 @@ test('extension: the ask must be later than the current end, and a blank approva
 })
 
 const applicants = JSON.stringify([{ id: 'c1', name: 'Sam Seeker', email: 'sam@x.org', organization: 'Org A' }, { id: 'c2', name: 'Ivy', email: 'ivy@x.org', organization: '' }])
-const grant = { grant_name: 'Youth Grant', review_method: 'admin', award_amount: 7500, applicants, status: '', end_date: '2026-12-31' }
+const grant = { grant_name: 'Youth Grant', review_method: 'admin', award_amount: 7500, applicants, number_of_awards: '1' }
+const award = (over = {}) => ({ id: 'a1', applicantId: 'c1', email: 'sam@x.org', name: 'Sam Seeker', organization: 'Org A', status: 'active', endDate: '2026-12-31', extensionStatus: '', requestedEnd: '', extensionReason: '', ...over })
 
-test('forward is for admin-reviewed grants, one applicant once', async () => {
+test('award links are tied to the award, grant links to the grant', async () => {
+  const { lifecycleLinks, lifecycleTokenValid } = await import('../lib/lifecycle-access.ts')
+  const secret = 's'.repeat(40)
+  const grantOnly = lifecycleLinks('https://x.test', secret, 'g1')
+  assert.equal(grantOnly['extension-request'], undefined)
+  const withAward = lifecycleLinks('https://x.test', secret, 'g1', 'a1')
+  const url = new URL(withAward['extension-review'])
+  assert.equal(url.searchParams.get('award'), 'a1')
+  const token = url.searchParams.get('access')
+  assert.equal(lifecycleTokenValid(secret, 'extension-review', 'a1', token), true)
+  assert.equal(lifecycleTokenValid(secret, 'extension-review', 'a2', token), false)
+  assert.equal(lifecycleTokenValid(secret, 'extension-review', 'g1', token), false)
+  assert.equal(new URL(withAward.allocation).searchParams.get('award'), null)
+})
+
+test('award limits: 1 and 2 stop, undetermined does not', async () => {
+  const { awardLimit } = await import('../lib/lifecycle-rules.ts')
+  assert.equal(awardLimit('1'), 1)
+  assert.equal(awardLimit('2'), 2)
+  assert.equal(awardLimit('undetermined'), Infinity)
+  assert.equal(awardLimit(''), Infinity)
+})
+
+test('forward is for admin-reviewed grants, one applicant once, never an awarded one', async () => {
   const { evaluateLifecycleSubmit } = await import('../lib/lifecycle-rules.ts')
   const ok = evaluateLifecycleSubmit('grant-mark-awarded', grant, { applicant: 'c1' }, '2026-11-22')
   assert.equal(ok.error, null)
@@ -73,7 +97,8 @@ test('forward is for admin-reviewed grants, one applicant once', async () => {
   assert.match(evaluateLifecycleSubmit('grant-mark-awarded', grant, { applicant: 'nope' }, '2026-11-22').error, /choose an applicant/i)
   assert.match(evaluateLifecycleSubmit('grant-mark-awarded', { ...grant, review_method: 'self' }, { applicant: 'c1' }, '2026-11-22').error, /not reviewed by the admin/i)
   assert.match(evaluateLifecycleSubmit('grant-mark-awarded', { ...grant, vetted_applicants: JSON.stringify([{ id: 'c1', email: 'sam@x.org' }]) }, { applicant: 'c1' }, '2026-11-22').error, /already sent/i)
-  assert.match(evaluateLifecycleSubmit('grant-mark-awarded', { ...grant, status: 'active' }, { applicant: 'c1' }, '2026-11-22').error, /already been awarded/i)
+  assert.match(evaluateLifecycleSubmit('grant-mark-awarded', grant, { applicant: 'c1' }, '2026-11-22', [award()]).error, /already awarded/i)
+  assert.match(evaluateLifecycleSubmit('grant-mark-awarded', { ...grant, listing_status: 'cancelled' }, { applicant: 'c1' }, '2026-11-22').error, /cancelled/i)
 })
 
 test('the funder selection form is for self and third party grants only', async () => {
@@ -82,31 +107,50 @@ test('the funder selection form is for self and third party grants only', async 
   assert.match(evaluateLifecycleSubmit('grant-funder-auto-review', grant, { applicant: 'c2' }, '2026-11-22').error, /admin team/i)
 })
 
-test('allocation needs a vetted applicant and a valid award', async () => {
+test('allocation needs a vetted applicant, a free award slot, and a valid award', async () => {
   const { evaluateLifecycleSubmit } = await import('../lib/lifecycle-rules.ts')
-  const vetted = { ...grant, vetted_applicants: JSON.stringify([{ id: 'c1', name: 'Sam Seeker', email: 'sam@x.org', organization: 'Org A' }]) }
+  const vetted = { ...grant, vetted_applicants: JSON.stringify([{ id: 'c1', name: 'Sam Seeker', email: 'sam@x.org', organization: 'Org A' }, { id: 'c2', name: 'Ivy', email: 'ivy@x.org', organization: '' }]) }
   const form = { applicant: 'c1', awardAmount: 5000, startDate: '2026-12-01', endDate: '2027-12-01', budgetCategories: 'travel', progressReportCadence: 'Every 3 months' }
   const ok = evaluateLifecycleSubmit('grant-management-requirements', vetted, form, '2026-11-22')
   assert.equal(ok.error, null)
   assert.equal(ok.extra.awardStage, 'awarded')
   assert.equal(ok.extra.cadenceMonths, 3)
+  assert.equal(ok.extra.limitReached, true)
   assert.equal(evaluateLifecycleSubmit('grant-management-requirements', vetted, { ...form, startDate: '2026-11-22' }, '2026-11-22').extra.awardStage, 'active')
-  assert.match(evaluateLifecycleSubmit('grant-management-requirements', vetted, { ...form, applicant: 'c2' }, '2026-11-22').error, /vetted applicants/i)
+  assert.match(evaluateLifecycleSubmit('grant-management-requirements', vetted, { ...form, applicant: 'c9' }, '2026-11-22').error, /vetted applicants/i)
   assert.match(evaluateLifecycleSubmit('grant-management-requirements', vetted, { ...form, awardAmount: 9000 }, '2026-11-22').error, /cannot be more/i)
-  assert.match(evaluateLifecycleSubmit('grant-management-requirements', { ...vetted, awarded_applicant: '{"id":"c1"}' }, form, '2026-11-22').error, /already been awarded/i)
+  assert.match(evaluateLifecycleSubmit('grant-management-requirements', vetted, form, '2026-11-22', [award({ applicantId: 'c1' })]).error, /already awarded/i)
+  assert.match(evaluateLifecycleSubmit('grant-management-requirements', vetted, { ...form, applicant: 'c2' }, '2026-11-22', [award({ applicantId: 'c1' })]).error, /already given/i)
 })
 
-test('extension: only the awardee asks, only once, and the funder decision keeps the asked date when blank', async () => {
+test('two awards: the second one reaches the limit, a cancelled award does not count', async () => {
   const { evaluateLifecycleSubmit } = await import('../lib/lifecycle-rules.ts')
-  const awarded = { ...grant, status: 'active', awarded_applicant: JSON.stringify({ id: 'c1', name: 'Sam Seeker', email: 'sam@x.org', organization: 'Org A' }) }
-  const ask = { email: 'Sam@x.org', requestedEndDate: '2027-03-31' }
-  assert.equal(evaluateLifecycleSubmit('apply-extension', awarded, ask, '2026-12-01').error, null)
-  assert.equal(evaluateLifecycleSubmit('apply-extension', awarded, { ...ask, email: 'ivy@x.org' }, '2026-12-01').status, 403)
-  assert.match(evaluateLifecycleSubmit('apply-extension', { ...awarded, extension_status: 'requested' }, ask, '2026-12-01').error, /already waiting/i)
-  assert.match(evaluateLifecycleSubmit('apply-extension', awarded, { ...ask, requestedEndDate: '2026-12-01' }, '2026-12-01').error, /after the current end/i)
-  const pending = { ...awarded, extension_status: 'requested', extension_requested_end_date: '2027-03-31' }
-  const approve = evaluateLifecycleSubmit('extension-review', pending, { extensionDecision: 'Approve', newEndDate: '' }, '2026-12-05')
+  const two = { ...grant, number_of_awards: '2', vetted_applicants: JSON.stringify([{ id: 'c1', name: 'Sam', email: 'sam@x.org', organization: '' }, { id: 'c2', name: 'Ivy', email: 'ivy@x.org', organization: '' }]) }
+  const form = { applicant: 'c1', awardAmount: 5000, startDate: '2026-12-01', endDate: '2027-12-01', budgetCategories: 'travel' }
+  assert.equal(evaluateLifecycleSubmit('grant-management-requirements', two, form, '2026-11-22').extra.limitReached, false)
+  assert.equal(evaluateLifecycleSubmit('grant-management-requirements', two, { ...form, applicant: 'c2' }, '2026-11-22', [award({ applicantId: 'c1' })]).extra.limitReached, true)
+  assert.equal(evaluateLifecycleSubmit('grant-management-requirements', two, { ...form, applicant: 'c2' }, '2026-11-22', [award({ applicantId: 'c1', status: 'cancelled' })]).extra.limitReached, false)
+})
+
+test('extension: only the awardee asks, once, and a blank approval keeps the asked date', async () => {
+  const { evaluateLifecycleSubmit } = await import('../lib/lifecycle-rules.ts')
+  const ask = { award: 'a1', email: 'Sam@x.org', requestedEndDate: '2027-03-31' }
+  assert.equal(evaluateLifecycleSubmit('apply-extension', grant, ask, '2026-12-01', [award()]).error, null)
+  assert.equal(evaluateLifecycleSubmit('apply-extension', grant, { ...ask, email: 'ivy@x.org' }, '2026-12-01', [award()]).status, 403)
+  assert.equal(evaluateLifecycleSubmit('apply-extension', grant, { ...ask, award: 'zzz' }, '2026-12-01', [award()]).status, 403)
+  assert.match(evaluateLifecycleSubmit('apply-extension', grant, ask, '2026-12-01', [award({ extensionStatus: 'requested' })]).error, /already waiting/i)
+  assert.match(evaluateLifecycleSubmit('apply-extension', grant, { ...ask, requestedEndDate: '2026-12-01' }, '2026-12-01', [award()]).error, /after the current end/i)
+  assert.match(evaluateLifecycleSubmit('apply-extension', grant, ask, '2026-12-01', [award({ status: 'closed' })]).error, /not open/i)
+  const pending = [award({ extensionStatus: 'requested', requestedEnd: '2027-03-31' })]
+  const approve = evaluateLifecycleSubmit('extension-review', grant, { award: 'a1', extensionDecision: 'Approve', newEndDate: '' }, '2026-12-05', pending)
   assert.equal(approve.extra.approvedEnd, '2027-03-31')
-  assert.equal(evaluateLifecycleSubmit('extension-review', pending, { extensionDecision: 'Deny' }, '2026-12-05').extra.decision, 'deny')
-  assert.match(evaluateLifecycleSubmit('extension-review', awarded, { extensionDecision: 'Approve' }, '2026-12-05').error, /no extension request/i)
+  assert.equal(evaluateLifecycleSubmit('extension-review', grant, { award: 'a1', extensionDecision: 'Deny' }, '2026-12-05', pending).extra.decision, 'deny')
+  assert.match(evaluateLifecycleSubmit('extension-review', grant, { award: 'a1', extensionDecision: 'Approve' }, '2026-12-05', [award()]).error, /no extension request/i)
+})
+
+test('a progress report needs an active award and some words', async () => {
+  const { evaluateLifecycleSubmit } = await import('../lib/lifecycle-rules.ts')
+  assert.equal(evaluateLifecycleSubmit('progress-report', grant, { award: 'a1', reportNarrative: 'Done' }, '2026-12-05', [award()]).error, null)
+  assert.match(evaluateLifecycleSubmit('progress-report', grant, { award: 'a1', reportNarrative: ' ' }, '2026-12-05', [award()]).error, /summary/i)
+  assert.equal(evaluateLifecycleSubmit('progress-report', grant, { award: 'a1', reportNarrative: 'x' }, '2026-12-05', [award({ status: 'closed' })]).status, 403)
 })

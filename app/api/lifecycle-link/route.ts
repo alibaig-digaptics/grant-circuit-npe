@@ -13,5 +13,7 @@ export async function GET(request: Request) {
   }
   const grantId = new URL(request.url).searchParams.get("recordId") || ""
   if (!/^[a-zA-Z0-9]{20,32}$/.test(grantId)) return NextResponse.json({ error: "recordId is required." }, { status: 400 })
-  return NextResponse.json(lifecycleLinks(new URL(request.url).origin, secret, grantId))
+  const awardId = new URL(request.url).searchParams.get("award") || ""
+  if (awardId && !/^[a-zA-Z0-9]{20,32}$/.test(awardId)) return NextResponse.json({ error: "award is not valid." }, { status: 400 })
+  return NextResponse.json(lifecycleLinks(new URL(request.url).origin, secret, grantId, awardId))
 }
