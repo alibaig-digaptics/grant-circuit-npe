@@ -32,24 +32,17 @@ export type FormStep = {
 export const FORM_STEPS = generated as Record<string, FormStep[]>
 
 export const REVIEW_PROCESS_OPTIONS = [
-  { label: "Reviewed by Grant Circuit Team", value: "Admin" },
-  { label: "Reviewed by Internal Team", value: "Internal" },
-  { label: "Reviewed by Third Party", value: "Third-Party" },
+  { label: "Admin", value: "admin" },
+  { label: "Third-Party", value: "thirdparty" },
+  { label: "Self", value: "self" },
 ]
 
 export function formatReviewProcess(val?: string): string {
-  if (!val) return ""
-  const normalized = val.trim().toLowerCase()
-  if (normalized === "admin" || normalized.includes("iim") || normalized.includes("grant circuit")) {
-    return "Reviewed by Grant Circuit Team"
-  }
-  if (normalized === "internal") {
-    return "Reviewed by Internal Team"
-  }
-  if (normalized === "third-party" || normalized === "third_party" || normalized.includes("third")) {
-    return "Reviewed by Third Party"
-  }
-  return val
+  const normalized = String(val || "").trim().toLowerCase().replace(/[^a-z]/g, "")
+  if (!normalized) return ""
+  if (normalized === "thirdparty" || normalized.includes("third")) return "Third-Party"
+  if (normalized === "self" || normalized === "internal") return "Self"
+  return "Admin"
 }
 
 const OPTIONS: Record<string, (string | { label: string; value: string })[]> = {

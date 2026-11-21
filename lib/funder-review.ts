@@ -16,7 +16,7 @@ export function reviewAllowed(record: FunderRecord, token: string, now = Date.no
   return matchesToken(p.funder_review_token_hash, token)
 }
 
-function matchesToken(hash: unknown, token: string) {
+export function matchesToken(hash: unknown, token: string) {
   return typeof hash === 'string' && /^[a-f0-9]{64}$/.test(hash) && /^[a-f0-9]{64}$/.test(token)
     && timingSafeEqual(Buffer.from(hash, 'hex'), createHash('sha256').update(token).digest())
 }

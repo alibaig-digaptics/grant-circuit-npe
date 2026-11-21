@@ -197,7 +197,7 @@ export function GrantForm({
       ? ((values, context, options) =>
           zodResolver(schemaForStep(activeStep(current, values)))(values, context, options as never)) as Resolver<FormValues>
       : undefined,
-    defaultValues: defaultValuesFor(steps, { contactId, recordId, opportunityId, ...(isFunderSignup ? funderPrefill(params) : {}), ...grantDefaults }),
+    defaultValues: defaultValuesFor(steps, { contactId, recordId, opportunityId, ...(isFunderSignup || form.slug === "org-registration" ? funderPrefill(params) : {}), ...grantDefaults }),
     mode: "onSubmit",
   })
 
@@ -839,6 +839,7 @@ function buttonLabel(slug: string, values: FormValues) {
   if (slug === "grant-applicant-submit" && /save|later/i.test(mode)) {
     return "Save for later"
   }
+  if (slug === "grant-rfp") return "Create Grant"
   return "Submit Application"
 }
 

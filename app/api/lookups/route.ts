@@ -328,6 +328,10 @@ export async function GET(request: Request) {
         }
       }
 
+      if (!reqDocs.length && typeof props.requirement_links === "string") {
+        props.requirement_links.split(/\n+/).map((x: string) => x.trim()).filter(Boolean).forEach((x: string) => reqDocs.push(x))
+      }
+
       // Check notes token fallback for extension
       const extMatch = notesStr.match(/\[(?:gf360_)?extension_request:([^|\]]*)\|?([^\]]*)\]/i)
 
@@ -339,8 +343,8 @@ export async function GET(request: Request) {
         grantName: props.grant_name || "",
         funderName: props.funder_name || "",
         awardAmount: props.award_amount || 0,
-        reviewProcess: props.review_process || "",
-        summary: contactGrantSummary || summary,
+        reviewProcess: props.review_method || props.review_process || "",
+        summary: contactGrantSummary || String(props.public_summary || "") || summary,
         requirementDocs: reqDocs,
         closingDocs: closingDocs,
         proposalSummary,

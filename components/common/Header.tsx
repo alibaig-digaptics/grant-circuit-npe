@@ -15,7 +15,7 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
       <div className="mb-4 flex items-center justify-center">
         <img
           src={ASSETS.LOGO_ON_LIGHT}
-          alt="Initiative on Islam and Medicine"
+          alt="Grant Circuit"
           className="mx-auto h-20 w-auto max-w-[360px] object-contain sm:h-24 sm:max-w-[440px] dark:hidden"
         />
         <img

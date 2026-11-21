@@ -40,6 +40,10 @@ export async function POST(
     return NextResponse.json({ error: "Unknown form" }, { status: 404 })
   }
 
+  if (slug === "org-activate" || slug === "vendor-review") {
+    return NextResponse.json({ error: "Use the review link in your staff email." }, { status: 403 })
+  }
+
   const body = await readBody(request, slug === "grant-rfp" ? async (input) => {
     const funder = await authorizedGrantDetails(String(input.organizationId || ""), String(input.grantAccess || "")).catch(() => null)
     return funder ? { ...input, ...funder, locationId: funderLocation() } : null

@@ -86,7 +86,7 @@
         },
         {
           "name": "reviewProcess",
-          "label": "Application Review Process",
+          "label": "Review method",
           "type": "dropdown",
           "required": true,
           "options": [
@@ -98,7 +98,7 @@
         },
         {
           "name": "requirementPdf",
-          "label": "Application Requirement Documents (multiple - e.g. LOR, CV)",
+          "label": "Requirement documents (multiple, for example a recommendation letter or CV)",
           "type": "file",
           "required": false,
           "options": [],
@@ -114,7 +114,7 @@
         },
         {
           "name": "closingChecklist",
-          "label": "Closing Checklist Documents (multiple)",
+          "label": "Closing checklist documents (multiple)",
           "type": "file",
           "required": false,
           "options": [],
@@ -1032,18 +1032,10 @@
       "title": "Vendor Form - Details",
       "fields": [
         {
-          "name": "organization",
-          "label": "Organization",
-          "type": "dropdown",
-          "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
           "name": "vendorName",
           "label": "Vendor Name",
           "type": "text",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },

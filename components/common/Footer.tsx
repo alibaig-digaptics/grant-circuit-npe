@@ -7,15 +7,6 @@ export const Footer: React.FC = () => {
     <footer className="mt-8 w-full border-t border-border/80 pt-4">
       <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-medium text-primary">
         <a
-          href="https://www.medicineandislam.org"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline underline-offset-4 transition-opacity hover:opacity-80"
-        >
-          www.medicineandislam.org
-        </a>
-        <span className="text-muted-foreground/60">·</span>
-        <a
           href="https://360growthlab.com/"
           target="_blank"
           rel="noopener noreferrer"

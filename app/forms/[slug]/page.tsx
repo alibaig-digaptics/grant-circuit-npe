@@ -15,6 +15,10 @@ export default async function FormPage({
   const form = getForm(slug)
   if (!form) notFound()
 
+  if (slug === "org-activate" || slug === "vendor-review") {
+    return <main className="mx-auto max-w-lg px-6 py-16"><h1 className="text-2xl font-semibold">{form.title}</h1><p className="mt-3">Use the private review link in your staff email.</p></main>
+  }
+
   let grantDefaults: Record<string, string> | undefined
   if (slug === "grant-rfp") {
     const { organizationId, access } = await searchParams
