@@ -24,8 +24,6 @@ async function readBody(request: Request, authorize?: (body: Record<string, unkn
   const fd = await request.formData()
   const raw = String(fd.get("payload") || "{}")
   const parsed = JSON.parse(raw) as Record<string, unknown>
-  const body = authorize ? await authorize(parsed) : parsed
-  if (!body) return null
   const filesByField = new Map<string, File[]>()
   for (const [key, value] of fd.entries()) {
     if (key === "payload" || typeof value === "string") continue
@@ -33,7 +31,22 @@ async function readBody(request: Request, authorize?: (body: Record<string, unkn
     list.push(value)
     filesByField.set(key, list)
   }
+  // Expense proof is checked by the rules, so it has to be uploaded first.
+  const early = new Set(["receipt", "quoteProposal"])
+  const uploaded = new Map<string, string[]>()
+  if (authorize) {
+    for (const [key, list] of filesByField) {
+      if (!early.has(key)) continue
+      const urls: string[] = []
+      for (const file of list) urls.push(await uploadGhlMedia(file))
+      uploaded.set(key, urls)
+      parsed[key] = urls
+    }
+  }
+  const body = authorize ? await authorize(parsed) : parsed
+  if (!body) return null
   for (const [key, list] of filesByField) {
+    if (uploaded.has(key)) continue
     const urls: string[] = []
     for (const file of list) urls.push(await uploadGhlMedia(file))
     if (!authorize || key === "requirementPdf" || key === "closingChecklist") body[key] = urls
