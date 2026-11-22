@@ -310,3 +310,12 @@ test('the vendor dashboard link opens one vendor only', async () => {
   assert.equal(vendorDashboardValid('s'.repeat(40), 'v2', url.searchParams.get('access')), false)
   assert.equal(vendorDashboardValid('', 'v1', url.searchParams.get('access')), false)
 })
+
+test('phone numbers become international or are dropped', async () => {
+  const { normalizePhone } = await import('../lib/forms.ts')
+  assert.equal(normalizePhone('(202) 555-0143'), '+12025550143')
+  assert.equal(normalizePhone('1-202-555-0143'), '+12025550143')
+  assert.equal(normalizePhone('+44 20 7946 0958'), '+442079460958')
+  assert.equal(normalizePhone('12345'), '')
+  assert.equal(normalizePhone(''), '')
+})

@@ -11,7 +11,7 @@ import { draftLink } from "@/lib/draft-link"
 import { sanitizeMilestones } from "@/lib/milestones"
 import { replaceMilestones } from "@/lib/milestone-store"
 import { authorizedGrantDetails, funderLocation } from "@/lib/funder-review"
-import { getForm, webhookUrl } from "@/lib/forms"
+import { PHONE_FIELDS, getForm, normalizePhone, webhookUrl } from "@/lib/forms"
 import { uploadGhlMedia } from "@/lib/ghl-media"
 import { SIMPLE_FIELDS, tagForForm } from "@/lib/notify-tags"
 
@@ -144,6 +144,7 @@ export async function POST(
     body.milestones = milestones
     body.draftUrl = draftLink(new URL(request.url).origin, process.env.GF360_GHL_PRIVATE_KEY || "", String(body.email || ""), String(body.recordId || ""))
   }
+  for (const key of PHONE_FIELDS) if (key in body) body[key] = normalizePhone(body[key])
   const url = webhookUrl(form)
 
   const res = await fetch(url, {
