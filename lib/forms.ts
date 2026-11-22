@@ -8,6 +8,9 @@ export type FormSlug =
   | "review-expense"
   | "bookkeeper-pay"
   | "confirm-payment"
+  | "proposal-request"
+  | "work-order"
+  | "vendor-work"
   | "apply-extension"
   | "extension-review"
   | "progress-report"
@@ -136,6 +139,30 @@ export const FORMS: FormDef[] = [
     audience: "applicant",
     n8nPath: "gc-expense-confirm-npe",
     steps: [{ id: 1, label: "Confirm" }],
+  },
+  {
+    slug: "proposal-request",
+    title: "Proposal Request",
+    subtitle: "Ask an approved vendor for a quote",
+    audience: "applicant",
+    n8nPath: "gc-work-request-npe",
+    steps: [{ id: 1, label: "Request" }],
+  },
+  {
+    slug: "work-order",
+    title: "Create Work Order",
+    subtitle: "Send an approved vendor work with a known cost",
+    audience: "applicant",
+    n8nPath: "gc-work-request-npe",
+    steps: [{ id: 1, label: "Work order" }],
+  },
+  {
+    slug: "vendor-work",
+    title: "Update Work",
+    subtitle: "Respond to or move this work forward",
+    audience: "staff",
+    n8nPath: "gc-vendor-work-npe",
+    steps: [{ id: 1, label: "Update" }],
   },
   {
     slug: "apply-extension",

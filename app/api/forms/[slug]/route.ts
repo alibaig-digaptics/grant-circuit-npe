@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 import { approvedSeekerForEmail } from "@/lib/applicant-access"
 import { NOT_REGISTERED_MESSAGE, TEAM_MEMBER_MESSAGE, isDirectSubmit, isPrimaryContact } from "@/lib/applicant-rules"
-import { EXPENSE_PURPOSES, lifecycleTokenValid, purposeForSlug, scopeFor, subjectParam } from "@/lib/lifecycle-access"
-import { loadActiveVendors, loadAward, loadAwards, loadExpense } from "@/lib/award-store"
+import { EXPENSE_PURPOSES, WORK_PURPOSES, lifecycleTokenValid, purposeForSlug, scopeFor, subjectParam } from "@/lib/lifecycle-access"
+import { loadActiveVendors, loadAward, loadAwards, loadExpense, loadWork } from "@/lib/award-store"
 import { loadMilestones } from "@/lib/milestone-store"
-import { expenseConfirmError, expensePayError, expenseReviewError, expenseSubmitError } from "@/lib/lifecycle-rules"
+import { expenseConfirmError, expensePayError, expenseReviewError, expenseSubmitError, workRequestError, workUpdateError } from "@/lib/lifecycle-rules"
 import { evaluateLifecycleSubmit, todayInZone } from "@/lib/lifecycle-rules"
 import { loadGrantProps } from "@/lib/grant-record"
 import { draftLink } from "@/lib/draft-link"
@@ -32,7 +32,7 @@ async function readBody(request: Request, authorize?: (body: Record<string, unkn
     filesByField.set(key, list)
   }
   // Expense proof is checked by the rules, so it has to be uploaded first.
-  const early = new Set(["receipt", "quoteProposal"])
+  const early = new Set(["receipt", "quoteProposal", "attachments"])
   const uploaded = new Map<string, string[]>()
   if (authorize) {
     for (const [key, list] of filesByField) {
@@ -90,6 +90,15 @@ export async function POST(
       const checked = slug === "review-expense" ? expenseReviewError(expense, body)
         : slug === "bookkeeper-pay" ? expensePayError(expense, body, today)
         : expenseConfirmError(expense, body)
+      if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
+      Object.assign(body, checked.extra)
+    } else if (WORK_PURPOSES.includes(purpose)) {
+      const checked = workUpdateError(await loadWork(subject), body)
+      if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
+      Object.assign(body, checked.extra)
+    } else if (slug === "proposal-request" || slug === "work-order") {
+      const [award, vendors] = await Promise.all([loadAward(subject), loadActiveVendors().catch(() => [])])
+      const checked = workRequestError(slug === "work-order" ? "work_order" : "proposal_request", { award, vendors }, body, todayInZone())
       if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
       Object.assign(body, checked.extra)
     } else if (slug === "submit-expense") {

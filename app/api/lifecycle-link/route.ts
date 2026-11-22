@@ -17,5 +17,7 @@ export async function GET(request: Request) {
   if (awardId && !/^[a-zA-Z0-9]{20,32}$/.test(awardId)) return NextResponse.json({ error: "award is not valid." }, { status: 400 })
   const expenseId = new URL(request.url).searchParams.get("expense") || ""
   if (expenseId && !/^[a-zA-Z0-9]{20,32}$/.test(expenseId)) return NextResponse.json({ error: "expense is not valid." }, { status: 400 })
-  return NextResponse.json(lifecycleLinks(new URL(request.url).origin, secret, grantId, awardId, expenseId))
+  const workId = new URL(request.url).searchParams.get("work") || ""
+  if (workId && !/^[a-zA-Z0-9]{20,32}$/.test(workId)) return NextResponse.json({ error: "work is not valid." }, { status: 400 })
+  return NextResponse.json(lifecycleLinks(new URL(request.url).origin, secret, grantId, awardId, expenseId, workId))
 }

@@ -227,3 +227,51 @@ test('expense links are tied to the expense', async () => {
   assert.equal(lifecycleTokenValid('s'.repeat(40), 'expense-pay', 'e2', url.searchParams.get('access')), false)
   assert.equal(new URL(links['submit-expense']).searchParams.get('award'), 'a1')
 })
+
+const wardCtx = { award: award({ allowedCategories: ['travel'], remaining: 1000, grantId: 'g1' }), vendors: [{ id: 'v1', name: 'Print Shop', email: 'shop@x.org' }] }
+const wbody = { email: 'sam@x.org', vendor: 'v1', title: 'Flyers', description: 'Print 500 flyers', amount: 200 }
+
+test('a work order needs the awardee, an active award, an approved vendor, and an amount within the balance', async () => {
+  const { workRequestError } = await import('../lib/lifecycle-rules.ts')
+  const ok = workRequestError('work_order', wardCtx, wbody, '2026-11-22')
+  assert.equal(ok.error, null)
+  assert.equal(ok.extra.vendorEmail, 'shop@x.org')
+  assert.equal(workRequestError('work_order', wardCtx, { ...wbody, email: 'ivy@x.org' }, '2026-11-22').status, 403)
+  assert.match(workRequestError('work_order', wardCtx, { ...wbody, vendor: 'pending' }, '2026-11-22').error, /approved vendor/i)
+  assert.match(workRequestError('work_order', wardCtx, { ...wbody, amount: 0 }, '2026-11-22').error, /amount/i)
+  assert.match(workRequestError('work_order', wardCtx, { ...wbody, amount: 5000 }, '2026-11-22').error, /left on the grant/i)
+  assert.match(workRequestError('work_order', wardCtx, { ...wbody, neededBy: '2020-01-01' }, '2026-11-22').error, /past/i)
+  assert.match(workRequestError('work_order', { ...wardCtx, award: award({ ...wardCtx.award, status: 'awarded' }) }, wbody, '2026-11-22').error, /active/i)
+})
+
+test('a proposal request needs no amount', async () => {
+  const { workRequestError } = await import('../lib/lifecycle-rules.ts')
+  assert.equal(workRequestError('proposal_request', wardCtx, { ...wbody, amount: '' }, '2026-11-22').error, null)
+})
+
+test('the vendor can only take steps that fit the stage', async () => {
+  const { workUpdateError, workActionsFor } = await import('../lib/lifecycle-rules.ts')
+  const work = (over = {}) => ({ id: 'w1', stage: 'work_order_request', kind: 'work_order', vendorId: 'v1', vendorName: 'Print Shop', vendorEmail: 'shop@x.org', vendorContactId: 'c9', awardId: 'a1', grantId: 'g1', applicantId: 'c1', applicantEmail: 'sam@x.org', applicantName: 'Sam', title: 'Flyers', amount: 200, ...over })
+  assert.deepEqual(workActionsFor('work_order_request').map(a => a.value), ['accept', 'decline'])
+  assert.deepEqual(workActionsFor('accepted').map(a => a.value), ['request_down_payment', 'start_work'])
+  assert.equal(workUpdateError(work(), { email: 'shop@x.org', action: 'accept' }).extra.nextStage, 'accepted')
+  assert.equal(workUpdateError(work(), { email: 'other@x.org', action: 'accept' }).status, 403)
+  assert.match(workUpdateError(work(), { email: 'shop@x.org', action: 'deliver' }).error, /not available/i)
+  assert.match(workUpdateError(work({ stage: 'accepted' }), { email: 'shop@x.org', action: 'request_down_payment' }).error, /amount/i)
+  assert.equal(workUpdateError(work({ stage: 'accepted' }), { email: 'shop@x.org', action: 'request_down_payment', amount: 50 }).extra.nextStage, 'down_payment_requested')
+  assert.equal(workUpdateError(work({ stage: 'down_payment_requested' }), { email: 'shop@x.org', action: 'start_work' }).extra.nextStage, 'work_in_progress')
+  assert.match(workUpdateError(work({ stage: 'proposal_request', kind: 'proposal_request' }), { email: 'shop@x.org', action: 'accept' }).error, /proposal/i)
+  assert.equal(workUpdateError(work({ stage: 'proposal_request', kind: 'proposal_request' }), { email: 'shop@x.org', action: 'accept', amount: 900 }).error, null)
+  assert.equal(workUpdateError(work({ stage: 'final_payment_received' }), { email: 'shop@x.org', action: 'close' }).extra.nextStage, 'closed')
+  assert.equal(workUpdateError(null, { action: 'accept' }).status, 403)
+})
+
+test('work links are tied to the work', async () => {
+  const { lifecycleLinks, lifecycleTokenValid } = await import('../lib/lifecycle-access.ts')
+  const links = lifecycleLinks('https://x.test', 's'.repeat(40), 'g1', 'a1', '', 'w1')
+  const url = new URL(links['work-update'])
+  assert.equal(url.searchParams.get('work'), 'w1')
+  assert.equal(lifecycleTokenValid('s'.repeat(40), 'work-update', 'w1', url.searchParams.get('access')), true)
+  assert.equal(lifecycleTokenValid('s'.repeat(40), 'work-update', 'w2', url.searchParams.get('access')), false)
+  assert.ok(links['work-order'] && links['proposal-request'])
+})

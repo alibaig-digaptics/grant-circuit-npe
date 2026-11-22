@@ -342,3 +342,110 @@ export function expenseConfirmError(expense: Expense | null, body: Record<string
   if (!text(body.received)) return bad('Tick the box to confirm you received the payment.')
   return { error: null as null, extra: { expenseId: expense.id, applicantId: expense.applicantId, applicantEmail: expense.applicantEmail, applicantName: expense.applicantName, amountNumber: expense.amount, awardId: expense.awardId } }
 }
+
+
+// ---------- Vendor work ----------
+export type WorkItem = {
+  id: string
+  stage: string
+  kind: string
+  vendorId: string
+  vendorName: string
+  vendorEmail: string
+  vendorContactId: string
+  awardId: string
+  grantId: string
+  applicantId: string
+  applicantEmail: string
+  applicantName: string
+  title: string
+  amount: number
+}
+
+export function workFromRecord(record: { id: string; properties: Record<string, unknown> }): WorkItem {
+  const p = record.properties
+  return {
+    id: record.id,
+    stage: text(p.stage),
+    kind: text(p.kind),
+    vendorId: text(p.vendor_id),
+    vendorName: text(p.vendor_name),
+    vendorEmail: text(p.vendor_email).toLowerCase(),
+    vendorContactId: text(p.vendor_contact_id),
+    awardId: text(p.award_id),
+    grantId: text(p.funding_source_id),
+    applicantId: text(p.applicant_id),
+    applicantEmail: text(p.applicant_email).toLowerCase(),
+    applicantName: text(p.applicant_name),
+    title: text(p.work_name),
+    amount: number(p.amount),
+  }
+}
+
+export type ActiveVendor = { id: string; name: string; email: string }
+
+/** The steps a vendor may take, in order. Each one names the stages it may start from and the stage it leads to. */
+export const WORK_ACTIONS: Record<string, { label: string; from: string[]; to: string; needsAmount?: boolean }> = {
+  accept: { label: 'Accept this request', from: ['proposal_request', 'work_order_request'], to: 'accepted' },
+  decline: { label: 'Decline this request', from: ['proposal_request', 'work_order_request'], to: 'declined' },
+  request_down_payment: { label: 'Request a down payment', from: ['accepted'], to: 'down_payment_requested', needsAmount: true },
+  start_work: { label: 'Start the work', from: ['accepted', 'down_payment_requested'], to: 'work_in_progress' },
+  deliver: { label: 'Mark the work delivered', from: ['work_in_progress'], to: 'delivered' },
+  request_final: { label: 'Request the final payment', from: ['delivered'], to: 'final_payment_requested', needsAmount: true },
+  final_received: { label: 'Confirm the final payment arrived', from: ['final_payment_requested'], to: 'final_payment_received' },
+  close: { label: 'Close this work', from: ['final_payment_received'], to: 'closed' },
+}
+
+export function workActionsFor(stage: string) {
+  return Object.entries(WORK_ACTIONS).filter(([, a]) => a.from.includes(stage)).map(([value, a]) => ({ value, label: a.label }))
+}
+
+export type WorkRequestContext = { award: Award | null; vendors: ActiveVendor[] }
+
+export function workRequestError(kind: 'proposal_request' | 'work_order', ctx: WorkRequestContext, body: Record<string, unknown>, today: string): { error: string; status: number } | { error: null; extra: Record<string, unknown> } {
+  const bad = (error: string, status = 400) => ({ error, status })
+  const award = ctx.award
+  if (!award || award.status === 'cancelled') return bad('We could not find your award for this grant.', 403)
+  if (text(body.email).toLowerCase() !== award.email) return bad('Only the seeker who was awarded this grant can send work to a vendor.', 403)
+  if (award.status !== 'active') return bad('You can send work once the grant is active.')
+  const vendor = ctx.vendors.find(v => v.id === text(body.vendor))
+  if (!vendor) return bad('Choose an approved vendor.')
+  if (!text(body.title)) return bad('Give the work a short title.')
+  if (!text(body.description)) return bad(kind === 'work_order' ? 'Describe the work.' : 'Describe what you need a proposal for.')
+  const needed = text(body.neededBy).slice(0, 10)
+  if (needed && (!isDate(needed) || needed < today)) return bad('Enter a date that is not in the past.')
+  const amount = number(body.amount)
+  if (kind === 'work_order') {
+    if (!(amount > 0)) return bad('Enter the amount you agreed.')
+    if (amount > award.remaining) return bad(`This is more than the $${award.remaining.toLocaleString('en-US')} left on the grant.`)
+  } else if (body.amount !== undefined && text(body.amount) !== '' && !(amount >= 0)) return bad('Enter a valid budget.')
+  const files = Array.isArray(body.attachments) ? body.attachments.map(text).filter(Boolean) : []
+  return {
+    error: null,
+    extra: {
+      kind, awardId: award.id, grantId: award.grantId, applicantId: award.applicantId, applicantEmail: award.email, applicantName: award.name, applicantOrganization: award.organization,
+      vendorId: vendor.id, vendorName: vendor.name, vendorEmail: vendor.email, title: text(body.title), amountNumber: amount, neededByDate: needed, attachmentUrls: files, today,
+    },
+  }
+}
+
+export function workUpdateError(work: WorkItem | null, body: Record<string, unknown>): { error: string; status: number } | { error: null; extra: Record<string, unknown> } {
+  const bad = (error: string, status = 400) => ({ error, status })
+  if (!work) return bad('We could not find this work.', 403)
+  if (text(body.email).toLowerCase() !== work.vendorEmail) return bad('Only the vendor this work was sent to can update it.', 403)
+  const key = text(body.action)
+  const action = WORK_ACTIONS[key]
+  if (!action || !action.from.includes(work.stage)) return bad('That step is not available right now.')
+  const amount = number(body.amount)
+  if (action.needsAmount && !(amount > 0)) return bad('Enter the amount.')
+  const files = Array.isArray(body.attachments) ? body.attachments.map(text).filter(Boolean) : []
+  if (key === 'accept' && work.kind === 'proposal_request' && !(amount > 0) && !files.length) return bad('Add your proposal: an amount, a file, or both.')
+  return {
+    error: null,
+    extra: {
+      workId: work.id, actionKey: key, nextStage: action.to, previousStage: work.stage, amountNumber: amount, attachmentUrls: files,
+      vendorId: work.vendorId, vendorName: work.vendorName, vendorEmail: work.vendorEmail, vendorContactId: work.vendorContactId,
+      applicantId: work.applicantId, applicantEmail: work.applicantEmail, applicantName: work.applicantName, awardId: work.awardId, grantId: work.grantId, title: work.title, kind: work.kind,
+    },
+  }
+}

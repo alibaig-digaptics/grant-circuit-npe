@@ -139,6 +139,7 @@ export function GrantForm({
   const access = params.get("access") || ""
   const awardParam = params.get("award") || ""
   const expenseParam = params.get("expense") || ""
+  const workParam = params.get("work") || ""
   const lifecycle = purposeForSlug(form.slug)
   const draftToken = params.get("draft") || ""
   const draftEmail = params.get("email") || ""
@@ -186,10 +187,10 @@ export function GrantForm({
     enabled: Boolean(recordId) && !isFunderSignup && !grantDefaults,
   })
   const lifecycleContext = useQuery({
-    queryKey: ["gc-lifecycle", form.slug, recordId, access, awardParam, expenseParam],
+    queryKey: ["gc-lifecycle", form.slug, recordId, access, awardParam, expenseParam, workParam],
     enabled: Boolean(lifecycle && recordId && access),
     queryFn: async () => {
-      const query = new URLSearchParams({ slug: form.slug, recordId, access, award: awardParam, expense: expenseParam })
+      const query = new URLSearchParams({ slug: form.slug, recordId, access, award: awardParam, expense: expenseParam, work: workParam })
       const res = await fetch(`/api/lifecycle-context?${query}`)
       const data = (await res.json().catch(() => ({}))) as {
         error?: string
@@ -203,6 +204,8 @@ export function GrantForm({
         categoryOptions?: { label: string; value: string }[]
         vendorOptions?: { label: string; value: string }[]
         remaining?: number
+        actionOptions?: { label: string; value: string }[]
+        ceilingLabel?: string
       }
       if (!res.ok) throw new Error(data.error || "This link is not valid.")
       return data
@@ -217,6 +220,8 @@ export function GrantForm({
           }
           if (form.slug === "submit-expense" && field.name === "milestone") return { ...field, options: lifecycleContext.data?.milestoneOptions ?? [] }
           if (form.slug === "submit-expense" && field.name === "budgetCategory") return { ...field, options: lifecycleContext.data?.categoryOptions ?? [] }
+          if ((form.slug === "proposal-request" || form.slug === "work-order") && field.name === "vendor") return { ...field, options: lifecycleContext.data?.vendorOptions ?? [] }
+          if (form.slug === "vendor-work" && field.name === "action") return { ...field, options: lifecycleContext.data?.actionOptions ?? [] }
           if (form.slug === "submit-expense" && field.name === "vendor") return { ...field, options: lifecycleContext.data?.vendorOptions ?? [] }
           if (!LOOKUP_FIELD_NAMES.includes(field.name as (typeof LOOKUP_FIELD_NAMES)[number])) {
             return field
@@ -269,7 +274,7 @@ export function GrantForm({
         ...values,
         ...grantDefaults,
         ...(isApplication ? { milestones } : {}),
-        ...(lifecycle ? { access, award: awardParam, expense: expenseParam } : {}),
+        ...(lifecycle ? { access, award: awardParam, expense: expenseParam, work: workParam } : {}),
       }
       const fd = new FormData()
       fd.append("payload", JSON.stringify(body))
@@ -817,7 +822,7 @@ export function GrantForm({
           {lifecycle && lifecycleContext.data ? (
             <div className="rounded-xl border border-border/70 bg-muted/20 p-3 text-xs text-muted-foreground">
               <p className="text-sm font-semibold text-foreground">{lifecycleContext.data.grantName}</p>
-              {lifecycleContext.data.ceiling ? <p>Grant amount up to ${lifecycleContext.data.ceiling.toLocaleString("en-US")}</p> : null}
+              {lifecycleContext.data.ceiling ? <p>{lifecycleContext.data.ceilingLabel || "Grant amount up to"} ${lifecycleContext.data.ceiling.toLocaleString("en-US")}</p> : null}
               {lifecycleContext.data.endDate ? <p>Current end date {lifecycleContext.data.endDate}</p> : null}
               {lifecycleContext.data.requestedEnd ? <p>Requested new end date {lifecycleContext.data.requestedEnd}</p> : null}
               {lifecycleContext.data.requestedReason ? <p>Reason: {lifecycleContext.data.requestedReason}</p> : null}

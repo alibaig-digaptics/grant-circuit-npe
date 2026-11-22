@@ -1853,5 +1853,225 @@
         }
       ]
     }
+  ],
+  "proposal-request": [
+    {
+      "title": "Proposal Request - Who",
+      "fields": [
+        {
+          "name": "firstName",
+          "label": "First Name",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "lastName",
+          "label": "Last Name",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "email",
+          "label": "Your email",
+          "type": "email",
+          "required": true,
+          "options": [],
+          "multiple": false
+        }
+      ]
+    },
+    {
+      "title": "Proposal Request - Details",
+      "fields": [
+        {
+          "name": "vendor",
+          "label": "Approved vendor",
+          "type": "dropdown",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "title",
+          "label": "Short title",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "description",
+          "label": "What you need a proposal for",
+          "type": "textarea",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "amount",
+          "label": "Rough budget (optional)",
+          "type": "number",
+          "required": false,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "neededBy",
+          "label": "Needed by (optional)",
+          "type": "date",
+          "required": false,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "attachments",
+          "label": "Specs or files (optional)",
+          "type": "file",
+          "required": false,
+          "options": [],
+          "multiple": true
+        }
+      ]
+    }
+  ],
+  "work-order": [
+    {
+      "title": "Work Order - Who",
+      "fields": [
+        {
+          "name": "firstName",
+          "label": "First Name",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "lastName",
+          "label": "Last Name",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "email",
+          "label": "Your email",
+          "type": "email",
+          "required": true,
+          "options": [],
+          "multiple": false
+        }
+      ]
+    },
+    {
+      "title": "Work Order - Details",
+      "fields": [
+        {
+          "name": "vendor",
+          "label": "Approved vendor",
+          "type": "dropdown",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "title",
+          "label": "Short title",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "description",
+          "label": "Describe the work",
+          "type": "textarea",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "amount",
+          "label": "Agreed amount",
+          "type": "number",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "neededBy",
+          "label": "Needed by (optional)",
+          "type": "date",
+          "required": false,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "attachments",
+          "label": "Specs or files (optional)",
+          "type": "file",
+          "required": false,
+          "options": [],
+          "multiple": true
+        }
+      ]
+    }
+  ],
+  "vendor-work": [
+    {
+      "title": "Update Work - Who",
+      "fields": [
+        {
+          "name": "email",
+          "label": "Your email",
+          "type": "email",
+          "required": true,
+          "options": [],
+          "multiple": false
+        }
+      ]
+    },
+    {
+      "title": "Update Work - Step",
+      "fields": [
+        {
+          "name": "action",
+          "label": "What do you want to do",
+          "type": "dropdown",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "amount",
+          "label": "Amount (for a proposal, down payment, or final payment)",
+          "type": "number",
+          "required": false,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "notes",
+          "label": "Note for the seeker (optional)",
+          "type": "textarea",
+          "required": false,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "attachments",
+          "label": "Quote or delivery files (optional)",
+          "type": "file",
+          "required": false,
+          "options": [],
+          "multiple": true
+        }
+      ]
+    }
   ]
 }
