@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server"
 import { approvedSeekerForEmail } from "@/lib/applicant-access"
 import { NOT_REGISTERED_MESSAGE, TEAM_MEMBER_MESSAGE, isDirectSubmit, isPrimaryContact } from "@/lib/applicant-rules"
-import { lifecycleTokenValid, purposeForSlug, scopeFor } from "@/lib/lifecycle-access"
-import { loadAwards } from "@/lib/award-store"
+import { EXPENSE_PURPOSES, lifecycleTokenValid, purposeForSlug, scopeFor, subjectParam } from "@/lib/lifecycle-access"
+import { loadActiveVendors, loadAward, loadAwards, loadExpense } from "@/lib/award-store"
+import { loadMilestones } from "@/lib/milestone-store"
+import { expenseConfirmError, expensePayError, expenseReviewError, expenseSubmitError } from "@/lib/lifecycle-rules"
 import { evaluateLifecycleSubmit, todayInZone } from "@/lib/lifecycle-rules"
 import { loadGrantProps } from "@/lib/grant-record"
 import { draftLink } from "@/lib/draft-link"
@@ -64,16 +66,36 @@ export async function POST(
   const purpose = purposeForSlug(slug)
   if (purpose) {
     const grantId = String(body.recordId || "")
-    if (!lifecycleTokenValid(process.env.GF360_GHL_PRIVATE_KEY || "", purpose, scopeFor(purpose, grantId, String(body.award || "")), String(body.access || ""))) {
+    const subject = String(body[subjectParam(purpose)] || "")
+    if (!lifecycleTokenValid(process.env.GF360_GHL_PRIVATE_KEY || "", purpose, scopeFor(purpose, grantId, subject), String(body.access || ""))) {
       return NextResponse.json({ error: "This link is not valid. Use the link from your email." }, { status: 403 })
     }
-    const grant = await loadGrantProps(grantId)
-    if (!grant) return NextResponse.json({ error: "Grant not found." }, { status: 404 })
-    const awards = await loadAwards(grantId)
-    const checked = evaluateLifecycleSubmit(slug, grant, body, todayInZone(), awards)
-    if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
     delete body.access
-    Object.assign(body, checked.extra)
+    if (EXPENSE_PURPOSES.includes(purpose)) {
+      const expense = await loadExpense(subject)
+      const today = todayInZone()
+      const checked = slug === "review-expense" ? expenseReviewError(expense, body)
+        : slug === "bookkeeper-pay" ? expensePayError(expense, body, today)
+        : expenseConfirmError(expense, body)
+      if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
+      Object.assign(body, checked.extra)
+    } else if (slug === "submit-expense") {
+      const award = await loadAward(subject)
+      const [milestones, vendors] = await Promise.all([
+        award ? loadMilestones(award.email, award.grantId).catch(() => []) : Promise.resolve([]),
+        loadActiveVendors().catch(() => []),
+      ])
+      const checked = expenseSubmitError({ award, milestones: milestones.map(m => m.name), vendors }, body, todayInZone())
+      if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
+      Object.assign(body, checked.extra)
+    } else {
+      const grant = await loadGrantProps(grantId)
+      if (!grant) return NextResponse.json({ error: "Grant not found." }, { status: 404 })
+      const awards = await loadAwards(grantId)
+      const checked = evaluateLifecycleSubmit(slug, grant, body, todayInZone(), awards)
+      if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
+      Object.assign(body, checked.extra)
+    }
   }
   if (slug === "grant-applicant-submit") {
     const seeker = await approvedSeekerForEmail(String(body.email || "")).catch(() => null)

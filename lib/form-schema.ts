@@ -55,7 +55,7 @@ const OPTIONS: Record<string, (string | { label: string; value: string })[]> = {
   submitMode: ["Save for Later", "Submit Now"],
   paymentKind: ["Reimbursement", "Future Payment"],
   isReimbursement: ["Reimbursement", "Future Payment"],
-  paymentMethod: ["Check", "ACH", "Wire", "Credit Card", "Other"],
+  paymentMethod: ["Wire", "ACH", "Credit Card", "Check", "Hand Delivery", "Mail", "Other"],
   decision: ["Approve", "Request Changes", "Reject"],
   reviewDecision: ["Approve", "Request Changes", "Reject"],
   extensionDecision: ["Approve", "Deny"],

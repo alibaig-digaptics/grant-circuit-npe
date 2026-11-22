@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
-import { lifecycleTokenValid, purposeForSlug, scopeFor } from "@/lib/lifecycle-access"
-import { loadAwards } from "@/lib/award-store"
+import { EXPENSE_PURPOSES, lifecycleTokenValid, purposeForSlug, scopeFor, subjectParam } from "@/lib/lifecycle-access"
+import { loadActiveVendors, loadAward, loadAwards, loadExpense } from "@/lib/award-store"
+import { loadMilestones } from "@/lib/milestone-store"
 import { applicantLabel, parseApplicants } from "@/lib/lifecycle-rules"
 import { loadGrantProps } from "@/lib/grant-record"
 
@@ -10,8 +11,25 @@ export async function GET(request: Request) {
   const slug = url.searchParams.get("slug") || ""
   const grantId = url.searchParams.get("recordId") || ""
   const purpose = purposeForSlug(slug)
-  if (!purpose || !lifecycleTokenValid(process.env.GF360_GHL_PRIVATE_KEY || "", purpose, scopeFor(purpose, grantId, url.searchParams.get("award") || ""), url.searchParams.get("access") || "")) {
+  if (!purpose || !lifecycleTokenValid(process.env.GF360_GHL_PRIVATE_KEY || "", purpose, scopeFor(purpose, grantId, url.searchParams.get(subjectParam(purpose)) || ""), url.searchParams.get("access") || "")) {
     return NextResponse.json({ error: "This link is not valid. Use the link from your email." }, { status: 403 })
+  }
+  if (purpose === "submit-expense") {
+    const award = await loadAward(url.searchParams.get("award") || "")
+    if (!award) return NextResponse.json({ error: "Award not found." }, { status: 404 })
+    const [milestones, vendors] = await Promise.all([loadMilestones(award.email, award.grantId).catch(() => []), loadActiveVendors().catch(() => [])])
+    return NextResponse.json({
+      grantName: "", ceiling: 0, endDate: award.endDate, requestedEnd: "", requestedReason: "", applicantOptions: [],
+      remaining: award.remaining,
+      milestoneOptions: milestones.map(m => ({ label: m.name, value: m.name })),
+      categoryOptions: award.allowedCategories.map(c => ({ label: c.charAt(0).toUpperCase() + c.slice(1), value: c })),
+      vendorOptions: [...vendors.map(v => ({ label: v.name, value: v.id })), { label: "Other (type the name below)", value: "other" }],
+    })
+  }
+  if (EXPENSE_PURPOSES.includes(purpose)) {
+    const expense = await loadExpense(url.searchParams.get("expense") || "")
+    if (!expense) return NextResponse.json({ error: "Expense not found." }, { status: 404 })
+    return NextResponse.json({ grantName: expense.description, ceiling: expense.amount, endDate: "", requestedEnd: "", requestedReason: "", applicantOptions: [] })
   }
   const grant = await loadGrantProps(grantId)
   if (!grant) return NextResponse.json({ error: "Grant not found." }, { status: 404 })

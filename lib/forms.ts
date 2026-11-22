@@ -7,6 +7,7 @@ export type FormSlug =
   | "submit-expense"
   | "review-expense"
   | "bookkeeper-pay"
+  | "confirm-payment"
   | "apply-extension"
   | "extension-review"
   | "progress-report"
@@ -127,6 +128,14 @@ export const FORMS: FormDef[] = [
       { id: 1, label: "Your info" },
       { id: 2, label: "Payment" },
     ],
+  },
+  {
+    slug: "confirm-payment",
+    title: "Confirm Payment Received",
+    subtitle: "Tell us the money arrived",
+    audience: "applicant",
+    n8nPath: "gc-expense-confirm-npe",
+    steps: [{ id: 1, label: "Confirm" }],
   },
   {
     slug: "apply-extension",

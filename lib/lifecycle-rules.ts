@@ -107,6 +107,9 @@ export type Award = {
   extensionStatus: string
   requestedEnd: string
   extensionReason: string
+  allowedCategories: string[]
+  remaining: number
+  grantId: string
 }
 export type SubmitResult = { error: string; status: number } | { error: null; extra: Record<string, unknown> }
 
@@ -128,6 +131,9 @@ export function awardFromRecord(record: { id: string; properties: Record<string,
     extensionStatus: text(p.extension_status),
     requestedEnd: text(p.extension_requested_end_date).slice(0, 10),
     extensionReason: text(p.extension_reason),
+    allowedCategories: parseCategories(p.allowed_budget_categories),
+    remaining: number(p.remaining_balance),
+    grantId: text(p.grant_id),
   }
 }
 
@@ -229,4 +235,110 @@ export function evaluateLifecycleSubmit(slug: string, grant: GrantProps, body: R
   }
 
   return { error: null, extra: {} }
+}
+
+
+// ---------- Expenses ----------
+export const INSTANT_METHODS = ['wire', 'ach', 'credit card']
+export const PAYMENT_METHODS = ['Wire', 'ACH', 'Credit Card', 'Check', 'Hand Delivery', 'Mail', 'Other']
+
+export type Expense = {
+  id: string
+  status: string
+  awardId: string
+  applicantId: string
+  applicantEmail: string
+  applicantName: string
+  amount: number
+  description: string
+  paymentKind: string
+}
+
+export function expenseFromRecord(record: { id: string; properties: Record<string, unknown> }): Expense {
+  const p = record.properties
+  return {
+    id: record.id,
+    status: text(p.status),
+    awardId: text(p.award_id),
+    applicantId: text(p.applicant_id),
+    applicantEmail: text(p.applicant_email).toLowerCase(),
+    applicantName: text(p.applicant_name),
+    amount: number(p.amount),
+    description: text(p.descriptions),
+    paymentKind: text(p.payment_kind),
+  }
+}
+
+/** Wire, ACH, and card are instant. Check, hand delivery, mail, and anything else are in transit. */
+export function isInstantMethod(method: unknown) {
+  return INSTANT_METHODS.includes(text(method).toLowerCase())
+}
+
+export type ExpenseSubmitContext = { award: Award | null; milestones: string[]; vendors: { id: string; name: string }[] }
+
+export function expenseSubmitError(ctx: ExpenseSubmitContext, body: Record<string, unknown>, today: string): { error: string; status: number } | { error: null; extra: Record<string, unknown> } {
+  const bad = (error: string, status = 400) => ({ error, status })
+  const award = ctx.award
+  if (!award || award.status === 'cancelled') return bad('We could not find your award for this grant.', 403)
+  if (text(body.email).toLowerCase() !== award.email) return bad('Only the seeker who was awarded this grant can file expenses.', 403)
+  if (award.status !== 'active') return bad('Expenses can be filed once the grant is active.')
+  const milestone = text(body.milestone)
+  if (!ctx.milestones.includes(milestone)) return bad('Choose one of the milestones from your application.')
+  const category = text(body.budgetCategory).toLowerCase()
+  if (!award.allowedCategories.includes(category)) return bad('Choose one of the budget categories this grant allows.')
+  const amount = number(body.amount)
+  if (!(amount > 0)) return bad('Enter the amount.')
+  if (amount > award.remaining) return bad(`This is more than the $${award.remaining.toLocaleString('en-US')} left on the grant.`)
+  if (!text(body.description)) return bad('Describe the expense.')
+  const kind = /future/i.test(text(body.paymentKind)) ? 'future_payment' : /reimb/i.test(text(body.paymentKind)) ? 'reimbursement' : ''
+  if (!kind) return bad('Choose reimbursement or future payment.')
+  const receipts = Array.isArray(body.receipt) ? body.receipt.map(text).filter(Boolean) : []
+  const quotes = Array.isArray(body.quoteProposal) ? body.quoteProposal.map(text).filter(Boolean) : []
+  if (kind === 'reimbursement') {
+    if (!isDate(body.expenseDate) || body.expenseDate > today) return bad('Enter the date you paid. It cannot be in the future.')
+    if (!receipts.length) return bad('Attach the receipt.')
+  } else if (!quotes.length) return bad('Attach the vendor quote.')
+  const vendorChoice = text(body.vendor)
+  const vendor = ctx.vendors.find(v => v.id === vendorChoice) ?? null
+  const outside = text(body.outsideVendorName)
+  if (!vendor && !outside) return bad('Choose a vendor, or type the name of an outside vendor.')
+  return {
+    error: null,
+    extra: {
+      awardId: award.id, applicantId: award.applicantId, applicantEmail: award.email, applicantName: award.name, applicantOrganization: award.organization,
+      grantId: award.grantId, milestoneName: milestone, budgetCategory: category, amountNumber: amount, paymentKindKey: kind,
+      vendorId: vendor?.id ?? '', payeeName: vendor?.name ?? outside, receiptUrls: receipts, quoteUrls: quotes, today,
+    },
+  }
+}
+
+export function expenseReviewError(expense: Expense | null, body: Record<string, unknown>) {
+  const bad = (error: string, status = 400) => ({ error, status })
+  if (!expense) return bad('We could not find this expense.', 403)
+  if (expense.status !== 'under_review') return bad('This expense is not waiting for a review.')
+  const d = text(body.decision)
+  const decision = /reject|deny/i.test(d) ? 'reject' : /change|revis/i.test(d) ? 'changes' : /approve/i.test(d) ? 'approve' : ''
+  if (!decision) return bad('Choose approve, request changes, or reject.')
+  if (decision !== 'approve' && !text(body.notes)) return bad('Write a note for the seeker.')
+  return { error: null as null, extra: { expenseId: expense.id, decision, applicantId: expense.applicantId, applicantEmail: expense.applicantEmail, applicantName: expense.applicantName, amountNumber: expense.amount, awardId: expense.awardId } }
+}
+
+export function expensePayError(expense: Expense | null, body: Record<string, unknown>, today: string) {
+  const bad = (error: string, status = 400) => ({ error, status })
+  if (!expense) return bad('We could not find this expense.', 403)
+  if (expense.status !== 'sent_to_bookkeeper') return bad('This expense is not waiting for a payment record.')
+  const method = text(body.paymentMethod)
+  if (!PAYMENT_METHODS.map(m => m.toLowerCase()).includes(method.toLowerCase())) return bad('Choose how it was paid.')
+  if (!isDate(body.paymentDate) || body.paymentDate > today) return bad('Enter the payment date. It cannot be in the future.')
+  if (!text(body.paymentRef)) return bad('Enter the payment reference.')
+  return { error: null as null, extra: { expenseId: expense.id, instant: isInstantMethod(method), methodKey: method.toLowerCase(), applicantId: expense.applicantId, applicantEmail: expense.applicantEmail, applicantName: expense.applicantName, amountNumber: expense.amount, awardId: expense.awardId } }
+}
+
+export function expenseConfirmError(expense: Expense | null, body: Record<string, unknown>) {
+  const bad = (error: string, status = 400) => ({ error, status })
+  if (!expense) return bad('We could not find this expense.', 403)
+  if (text(body.email).toLowerCase() !== expense.applicantEmail) return bad('Only the seeker who filed this expense can confirm it.', 403)
+  if (expense.status !== 'payment_in_progress') return bad('This payment is not waiting for your confirmation.')
+  if (!text(body.received)) return bad('Tick the box to confirm you received the payment.')
+  return { error: null as null, extra: { expenseId: expense.id, applicantId: expense.applicantId, applicantEmail: expense.applicantEmail, applicantName: expense.applicantName, amountNumber: expense.amount, awardId: expense.awardId } }
 }

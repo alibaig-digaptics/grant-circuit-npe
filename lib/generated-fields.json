@@ -406,7 +406,7 @@
   ],
   "submit-expense": [
     {
-      "title": "Expense Form - Identity",
+      "title": "Expense - Who",
       "fields": [
         {
           "name": "firstName",
@@ -431,43 +431,57 @@
           "required": true,
           "options": [],
           "multiple": false
-        },
-        {
-          "name": "phone",
-          "label": "Phone",
-          "type": "tel",
-          "required": true,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "smsConsent",
-          "label": "By checking this box, I consent to receive non-marketing text messages from Grant Flow 360. Message frequency varies, message & data rates may apply. Text HELP for assistance, reply STOP to opt out.",
-          "type": "checkbox",
-          "required": true,
-          "options": [
-            "I agree"
-          ],
-          "multiple": false
         }
       ]
     },
     {
-      "title": "Expense Form - Details",
+      "title": "Expense - Details",
       "fields": [
         {
-          "name": "project",
-          "label": "Project",
+          "name": "milestone",
+          "label": "Milestone",
           "type": "dropdown",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "budgetCategory",
+          "label": "Budget Category",
+          "type": "dropdown",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "amount",
+          "label": "Amount",
+          "type": "number",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "businessPurpose",
+          "label": "Why it is needed",
+          "type": "textarea",
           "required": false,
           "options": [],
           "multiple": false
         },
         {
-          "name": "fundingSource",
-          "label": "Funding Source",
+          "name": "paymentKind",
+          "label": "Reimbursement or future payment",
           "type": "dropdown",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },
@@ -480,64 +494,16 @@
           "multiple": false
         },
         {
-          "name": "budgetCategory",
-          "label": "Budget Category",
-          "type": "dropdown",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "amount",
-          "label": "Amount",
-          "type": "number",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "description",
-          "label": "Description",
-          "type": "textarea",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "businessPurpose",
-          "label": "Needs Justification",
-          "type": "textarea",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "attendees",
-          "label": "Attendees (optional \u2014 events)",
-          "type": "textarea",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "mileage",
-          "label": "Mileage (optional \u2014 travel)",
-          "type": "number",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "paymentKind",
-          "label": "Reimbursement / For Future Payment",
-          "type": "dropdown",
+          "name": "outsideVendorName",
+          "label": "Outside vendor name",
+          "type": "text",
           "required": false,
           "options": [],
           "multiple": false
         },
         {
           "name": "expenseDate",
-          "label": "Expense Date (if applicable \u2014 required for Reimbursement)",
+          "label": "Date you paid (reimbursement)",
           "type": "date",
           "required": false,
           "options": [],
@@ -545,15 +511,31 @@
         },
         {
           "name": "reimbursedTo",
-          "label": "Reimburse To (fill only for Reimbursement)",
+          "label": "Reimburse to (reimbursement)",
           "type": "text",
           "required": false,
           "options": [],
           "multiple": false
         },
         {
+          "name": "attendees",
+          "label": "Attendees (events, optional)",
+          "type": "textarea",
+          "required": false,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "mileage",
+          "label": "Mileage (travel, optional)",
+          "type": "number",
+          "required": false,
+          "options": [],
+          "multiple": false
+        },
+        {
           "name": "notes",
-          "label": "Notes (use this to explain Other category)",
+          "label": "Notes (optional)",
           "type": "textarea",
           "required": false,
           "options": [],
@@ -561,59 +543,38 @@
         },
         {
           "name": "receipt",
-          "label": "Receipt Upload",
+          "label": "Receipt (reimbursement)",
           "type": "file",
           "required": false,
           "options": [],
-          "multiple": false
+          "multiple": true
         },
         {
           "name": "quoteProposal",
-          "label": "Quote / Proposal Upload",
+          "label": "Vendor quote (future payment)",
           "type": "file",
           "required": false,
           "options": [],
-          "multiple": false
+          "multiple": true
         }
       ]
     }
   ],
   "review-expense": [
     {
-      "title": "Reviewer Form - Open",
-      "fields": [
-        {
-          "name": "contactId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "recordId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        }
-      ]
-    },
-    {
-      "title": "Reviewer Form - Decision",
+      "title": "Expense Review - Decision",
       "fields": [
         {
           "name": "decision",
           "label": "Decision",
           "type": "dropdown",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },
         {
           "name": "notes",
-          "label": "Notes (required for Request Changes / Reject)",
+          "label": "Note for the seeker (required for changes or reject)",
           "type": "textarea",
           "required": false,
           "options": [],
@@ -624,50 +585,29 @@
   ],
   "bookkeeper-pay": [
     {
-      "title": "Bookkeeper Form - Open",
-      "fields": [
-        {
-          "name": "contactId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        },
-        {
-          "name": "recordId",
-          "label": "(hidden)",
-          "type": "text",
-          "required": false,
-          "options": [],
-          "multiple": false
-        }
-      ]
-    },
-    {
-      "title": "Bookkeeper Form - Payment",
+      "title": "Record Payment - Payment",
       "fields": [
         {
           "name": "paymentMethod",
-          "label": "Payment Method",
+          "label": "Payment method",
           "type": "dropdown",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },
         {
           "name": "paymentDate",
-          "label": "Payment Date",
+          "label": "Payment date",
           "type": "date",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },
         {
           "name": "paymentRef",
-          "label": "Payment Reference",
+          "label": "Payment reference",
           "type": "text",
-          "required": false,
+          "required": true,
           "options": [],
           "multiple": false
         },
@@ -1875,6 +1815,37 @@
         {
           "name": "decisionNotes",
           "label": "Notes for the applicant",
+          "type": "textarea",
+          "required": false,
+          "options": [],
+          "multiple": false
+        }
+      ]
+    }
+  ],
+  "confirm-payment": [
+    {
+      "title": "Confirm - Receipt",
+      "fields": [
+        {
+          "name": "email",
+          "label": "Your email",
+          "type": "email",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "received",
+          "label": "I received this payment",
+          "type": "checkbox",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes (optional)",
           "type": "textarea",
           "required": false,
           "options": [],

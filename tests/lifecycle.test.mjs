@@ -154,3 +154,76 @@ test('a progress report needs an active award and some words', async () => {
   assert.match(evaluateLifecycleSubmit('progress-report', grant, { award: 'a1', reportNarrative: ' ' }, '2026-12-05', [award()]).error, /summary/i)
   assert.equal(evaluateLifecycleSubmit('progress-report', grant, { award: 'a1', reportNarrative: 'x' }, '2026-12-05', [award({ status: 'closed' })]).status, 403)
 })
+
+const eaward = award({ allowedCategories: ['travel', 'events'], remaining: 1000, grantId: 'g1' })
+const ctx = { award: eaward, milestones: ['Launch'], vendors: [{ id: 'v1', name: 'Print Shop' }] }
+const good = { email: 'sam@x.org', milestone: 'Launch', budgetCategory: 'travel', amount: 200, description: 'Flyers', paymentKind: 'Reimbursement', expenseDate: '2026-11-20', receipt: ['u'], vendor: 'v1' }
+
+test('an expense needs the awardee, an active award, a milestone, an allowed category, and room in the budget', async () => {
+  const { expenseSubmitError } = await import('../lib/lifecycle-rules.ts')
+  const ok = expenseSubmitError(ctx, good, '2026-11-22')
+  assert.equal(ok.error, null)
+  assert.equal(ok.extra.payeeName, 'Print Shop')
+  assert.equal(expenseSubmitError(ctx, { ...good, email: 'ivy@x.org' }, '2026-11-22').status, 403)
+  assert.equal(expenseSubmitError({ ...ctx, award: null }, good, '2026-11-22').status, 403)
+  assert.match(expenseSubmitError({ ...ctx, award: award({ ...eaward, status: 'awarded' }) }, good, '2026-11-22').error, /active/i)
+  assert.match(expenseSubmitError(ctx, { ...good, milestone: 'Nope' }, '2026-11-22').error, /milestone/i)
+  assert.match(expenseSubmitError(ctx, { ...good, budgetCategory: 'marketing' }, '2026-11-22').error, /categor/i)
+  assert.match(expenseSubmitError(ctx, { ...good, amount: 5000 }, '2026-11-22').error, /left on the grant/i)
+})
+
+test('reimbursement needs a past date and a receipt, future payment needs a quote, an outside vendor can be typed', async () => {
+  const { expenseSubmitError } = await import('../lib/lifecycle-rules.ts')
+  assert.match(expenseSubmitError(ctx, { ...good, receipt: [] }, '2026-11-22').error, /receipt/i)
+  assert.match(expenseSubmitError(ctx, { ...good, expenseDate: '2026-12-01' }, '2026-11-22').error, /future/i)
+  const future = { ...good, paymentKind: 'Future Payment', expenseDate: '', receipt: [] }
+  assert.match(expenseSubmitError(ctx, future, '2026-11-22').error, /quote/i)
+  assert.equal(expenseSubmitError(ctx, { ...future, quoteProposal: ['q'] }, '2026-11-22').error, null)
+  assert.match(expenseSubmitError(ctx, { ...good, vendor: 'other', outsideVendorName: '' }, '2026-11-22').error, /vendor/i)
+  const outside = expenseSubmitError(ctx, { ...good, vendor: 'other', outsideVendorName: 'Joe Plumbing' }, '2026-11-22')
+  assert.equal(outside.extra.payeeName, 'Joe Plumbing')
+  assert.equal(outside.extra.vendorId, '')
+})
+
+const exp = (over = {}) => ({ id: 'e1', status: 'under_review', awardId: 'a1', applicantId: 'c1', applicantEmail: 'sam@x.org', applicantName: 'Sam', amount: 200, description: 'x', paymentKind: 'reimbursement', ...over })
+
+test('review: approve needs no note, changes and reject do', async () => {
+  const { expenseReviewError } = await import('../lib/lifecycle-rules.ts')
+  assert.equal(expenseReviewError(exp(), { decision: 'Approve' }).extra.decision, 'approve')
+  assert.match(expenseReviewError(exp(), { decision: 'Request Changes' }).error, /note/i)
+  assert.equal(expenseReviewError(exp(), { decision: 'Reject', notes: 'no' }).extra.decision, 'reject')
+  assert.match(expenseReviewError(exp({ status: 'approved' }), { decision: 'Approve' }).error, /not waiting/i)
+  assert.equal(expenseReviewError(null, { decision: 'Approve' }).status, 403)
+})
+
+test('payment: wire, ACH, and card are instant, check, hand delivery, and mail are not', async () => {
+  const { expensePayError, isInstantMethod } = await import('../lib/lifecycle-rules.ts')
+  for (const m of ['Wire', 'ACH', 'Credit Card']) assert.equal(isInstantMethod(m), true)
+  for (const m of ['Check', 'Hand Delivery', 'Mail', 'Other']) assert.equal(isInstantMethod(m), false)
+  const sent = exp({ status: 'sent_to_bookkeeper' })
+  const body = { paymentMethod: 'Check', paymentDate: '2026-11-20', paymentRef: '1042' }
+  assert.equal(expensePayError(sent, body, '2026-11-22').extra.instant, false)
+  assert.equal(expensePayError(sent, { ...body, paymentMethod: 'Wire' }, '2026-11-22').extra.instant, true)
+  assert.match(expensePayError(sent, { ...body, paymentMethod: 'Bitcoin' }, '2026-11-22').error, /how it was paid/i)
+  assert.match(expensePayError(sent, { ...body, paymentRef: '' }, '2026-11-22').error, /reference/i)
+  assert.match(expensePayError(exp(), body, '2026-11-22').error, /not waiting/i)
+})
+
+test('confirming receipt: only the seeker, only while in progress', async () => {
+  const { expenseConfirmError } = await import('../lib/lifecycle-rules.ts')
+  const inProgress = exp({ status: 'payment_in_progress' })
+  assert.equal(expenseConfirmError(inProgress, { email: 'SAM@x.org', received: 'I agree' }).error, null)
+  assert.equal(expenseConfirmError(inProgress, { email: 'ivy@x.org', received: 'I agree' }).status, 403)
+  assert.match(expenseConfirmError(inProgress, { email: 'sam@x.org', received: '' }).error, /tick/i)
+  assert.match(expenseConfirmError(exp(), { email: 'sam@x.org', received: 'x' }).error, /not waiting/i)
+})
+
+test('expense links are tied to the expense', async () => {
+  const { lifecycleLinks, lifecycleTokenValid } = await import('../lib/lifecycle-access.ts')
+  const links = lifecycleLinks('https://x.test', 's'.repeat(40), 'g1', 'a1', 'e1')
+  const url = new URL(links['expense-pay'])
+  assert.equal(url.searchParams.get('expense'), 'e1')
+  assert.equal(lifecycleTokenValid('s'.repeat(40), 'expense-pay', 'e1', url.searchParams.get('access')), true)
+  assert.equal(lifecycleTokenValid('s'.repeat(40), 'expense-pay', 'e2', url.searchParams.get('access')), false)
+  assert.equal(new URL(links['submit-expense']).searchParams.get('award'), 'a1')
+})
