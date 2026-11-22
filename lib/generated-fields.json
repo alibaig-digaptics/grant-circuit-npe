@@ -2148,5 +2148,20 @@
         }
       ]
     }
+  ],
+  "close-applications": [
+    {
+      "title": "Close Applications",
+      "fields": [
+        {
+          "name": "confirm",
+          "label": "I am done choosing. Close applications and tell everyone not awarded.",
+          "type": "checkbox",
+          "required": true,
+          "options": [],
+          "multiple": false
+        }
+      ]
+    }
   ]
 }

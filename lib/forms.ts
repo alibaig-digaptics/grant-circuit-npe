@@ -13,6 +13,7 @@ export type FormSlug =
   | "vendor-work"
   | "closeout-submit"
   | "closeout-review"
+  | "close-applications"
   | "apply-extension"
   | "extension-review"
   | "progress-report"
@@ -181,6 +182,14 @@ export const FORMS: FormDef[] = [
     audience: "staff",
     n8nPath: "gc-closeout-review-npe",
     steps: [{ id: 1, label: "Review" }],
+  },
+  {
+    slug: "close-applications",
+    title: "Close Applications",
+    subtitle: "Stop taking applications. Everyone not awarded is told.",
+    audience: "funder",
+    n8nPath: "gc-close-applications-npe",
+    steps: [{ id: 1, label: "Close" }],
   },
   {
     slug: "apply-extension",

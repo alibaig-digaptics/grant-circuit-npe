@@ -17,6 +17,7 @@ export const LIFECYCLE_PURPOSES = {
   'work-update': 'vendor-work',
   'closeout-submit': 'closeout-submit',
   'closeout-review': 'closeout-review',
+  'close-applications': 'close-applications',
 } as const
 
 export type LifecyclePurpose = keyof typeof LIFECYCLE_PURPOSES

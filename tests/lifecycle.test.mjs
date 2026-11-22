@@ -291,3 +291,14 @@ test('closeout: only the awardee, once closing prep has started, with documents,
   assert.match(closeoutReviewError({ ...a, closeoutStatus: 'submitted' }, { action: 'approve_close' }).error, /not available/i)
   assert.match(closeoutReviewError({ ...a, closeoutStatus: 'submitted' }, { action: 'ask_more' }).error, /missing/i)
 })
+
+test('closing applications lists everyone not awarded and needs a tick', async () => {
+  const { evaluateLifecycleSubmit } = await import('../lib/lifecycle-rules.ts')
+  const grant = { grant_name: 'G', listing_status: 'open', applicants: JSON.stringify([{ id: 'c1', name: 'Sam', email: 's@x.org' }, { id: 'c2', name: 'Ivy', email: 'i@x.org' }]) }
+  const awards = [award({ applicantId: 'c1' })]
+  const ok = evaluateLifecycleSubmit('close-applications', grant, { confirm: true }, '2026-11-22', awards)
+  assert.equal(ok.error, null)
+  assert.deepEqual(ok.extra.notSelected.map(a => a.id), ['c2'])
+  assert.match(evaluateLifecycleSubmit('close-applications', grant, {}, '2026-11-22', awards).error, /tick/i)
+  assert.match(evaluateLifecycleSubmit('close-applications', { ...grant, listing_status: 'closed' }, { confirm: true }, '2026-11-22', awards).error, /already closed/i)
+})

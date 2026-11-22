@@ -208,6 +208,14 @@ export function evaluateLifecycleSubmit(slug: string, grant: GrantProps, body: R
     }
   }
 
+  if (slug === 'close-applications') {
+    if (text(grant.listing_status) === 'closed') return refuse('Applications are already closed for this grant.')
+    if (!text(body.confirm)) return refuse('Tick the box to close applications.')
+    const awarded = new Set(liveAwards(awards).map(item => item.applicantId))
+    const notSelected = parseApplicants(grant.applicants).filter(item => !awarded.has(item.id)).map(item => ({ id: item.id, name: item.name, email: item.email }))
+    return { error: null, extra: { ...base, notSelected } }
+  }
+
   const award = awards.find(item => item.id === text(body.award)) ?? null
 
   if (slug === 'apply-extension') {
