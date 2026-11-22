@@ -49,7 +49,57 @@ export function formatReviewProcess(val?: string): string {
 
 const BUDGET_CATEGORY_OPTIONS = ["personnel", "events", "supplies", "travel", "marketing", "consulting", "equipment", "other"].map((value) => ({ label: value[0].toUpperCase() + value.slice(1), value }))
 
+
+const YES_NO = [{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]
 const OPTIONS: Record<string, (string | { label: string; value: string })[]> = {
+  status501c3: YES_NO,
+  samRegistered: YES_NO,
+  required1099: YES_NO,
+  certificationStatus: YES_NO,
+  ownershipCertified: [
+    { label: "Yes, certified", value: "yes_certified" },
+    { label: "No, self-identified only", value: "no_selfidentified_only" },
+    { label: "Certification pending", value: "certification_pending" },
+    { label: "Not sure", value: "not_sure" },
+  ],
+  ownershipStatus: [
+    { label: "Women-owned business", value: "womenowned_business" },
+    { label: "Minority-owned business", value: "minorityowned_business" },
+    { label: "Veteran-owned business", value: "veteranowned_business" },
+    { label: "Service-disabled veteran-owned business", value: "servicedisabled_veteranowned_business" },
+    { label: "Disabled-owned business", value: "disabledowned_business" },
+    { label: "LGBTQ-owned business", value: "lgbtqowned_business" },
+    { label: "Small business", value: "small_business" },
+    { label: "Disadvantaged business enterprise", value: "disadvantaged_business_enterprise" },
+    { label: "Economically disadvantaged women-owned business", value: "economically_disadvantaged_womenowned_business" },
+    { label: "HUBZone business", value: "hubzone_business" },
+    { label: "8(a) certified business", value: "8a_certified_business" },
+    { label: "Nonprofit organization", value: "nonprofit_organization" },
+    { label: "Faith-based organization", value: "faithbased_organization" },
+    { label: "Community-based organization", value: "communitybased_organization" },
+    { label: "None of the above", value: "none_of_the_above" },
+    { label: "Other", value: "other" },
+  ],
+  vendorType: [
+    { label: "Individual (1099)", value: "individual_1099" },
+    { label: "Sole proprietorship", value: "sole_proprietorship" },
+    { label: "LLC", value: "llc" },
+    { label: "Corporation (C-Corp)", value: "corporation_ccorp" },
+    { label: "Corporation (S-Corp)", value: "corporation_scorp" },
+    { label: "Partnership", value: "partnership" },
+    { label: "Nonprofit", value: "nonprofit" },
+    { label: "Government entity", value: "government_entity" },
+    { label: "Other", value: "other" },
+  ],
+  certificationChoice: ["Women-owned (WOB)", "Minority-owned (MBE)", "Veteran-owned", "None"],
+  paymentMethods: [{ label: "Check", value: "check" }, { label: "ACH", value: "ach" }, { label: "Wire", value: "wire" }, { label: "Credit card", value: "credit_card" }, { label: "Other", value: "other" }],
+  accountType: [{ label: "Checking", value: "checking" }, { label: "Savings", value: "savings" }],
+  categories: [
+    { label: "Office supplies", value: "Office Supplies" }, { label: "Equipment", value: "Equipment" }, { label: "Professional services", value: "Professional Services" },
+    { label: "Catering / food", value: "Catering/Food" }, { label: "Venue / space", value: "Venue/Space" }, { label: "Transportation", value: "Transportation" },
+    { label: "Technology", value: "Technology" }, { label: "Marketing / design", value: "Marketing/Design" }, { label: "Insurance", value: "Insurance" },
+    { label: "Legal", value: "Legal" }, { label: "Accounting", value: "Accounting" }, { label: "Other", value: "Other" },
+  ],
   numberOfAwards: ["Undetermined", "1", "2"],
   reviewProcess: REVIEW_PROCESS_OPTIONS,
   submitMode: ["Save for Later", "Submit Now"],

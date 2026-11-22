@@ -912,14 +912,14 @@
         {
           "name": "categories",
           "label": "Categories",
-          "type": "dropdown",
+          "type": "multicheck",
           "required": false,
           "options": [],
           "multiple": false
         },
         {
           "name": "paymentMethods",
-          "label": "Payment Methods (select all that apply)",
+          "label": "Preferred payment method",
           "type": "dropdown",
           "required": false,
           "options": [],
