@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { timingSafeEqual } from "node:crypto"
-import { lifecycleLinks } from "@/lib/lifecycle-access"
+import { lifecycleLinks, vendorDashboardLink } from "@/lib/lifecycle-access"
 
 /** n8n asks for the signed lifecycle links of a grant. Only a caller holding the account key gets them. */
 export async function GET(request: Request) {
@@ -19,5 +19,9 @@ export async function GET(request: Request) {
   if (expenseId && !/^[a-zA-Z0-9]{20,32}$/.test(expenseId)) return NextResponse.json({ error: "expense is not valid." }, { status: 400 })
   const workId = new URL(request.url).searchParams.get("work") || ""
   if (workId && !/^[a-zA-Z0-9]{20,32}$/.test(workId)) return NextResponse.json({ error: "work is not valid." }, { status: 400 })
-  return NextResponse.json(lifecycleLinks(new URL(request.url).origin, secret, grantId, awardId, expenseId, workId))
+  const vendorId = new URL(request.url).searchParams.get("vendor") || ""
+  if (vendorId && !/^[a-zA-Z0-9]{20,32}$/.test(vendorId)) return NextResponse.json({ error: "vendor is not valid." }, { status: 400 })
+  const origin = new URL(request.url).origin
+  const links = lifecycleLinks(origin, secret, grantId, awardId, expenseId, workId)
+  return NextResponse.json(vendorId ? { ...links, "vendor-dashboard": vendorDashboardLink(origin, secret, vendorId) } : links)
 }

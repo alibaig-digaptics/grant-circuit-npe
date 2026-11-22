@@ -46,3 +46,34 @@ export async function loadWork(id: string): Promise<WorkItem | null> {
   const record = data?.record
   return record?.id === id && record.properties ? workFromRecord(record) : null
 }
+
+type Row = { id: string; properties: Record<string, unknown> }
+
+async function searchByVendor(object: string, vendorId: string): Promise<Row[]> {
+  const data = await funderGhl(`/objects/${object}/records/search`, {
+    method: 'POST',
+    body: JSON.stringify({ locationId: funderLocation(), page: 1, pageLimit: 100, filters: [{ field: 'properties.vendor_id', operator: 'eq', value: vendorId }] }),
+  })
+  const rows = data?.records ?? data?.customObjectRecords
+  return Array.isArray(rows) ? rows : []
+}
+
+/** What a vendor sees: their work and the payments made to them. */
+export async function loadVendorDashboard(vendorId: string) {
+  const vendor = await funderGhl(`/objects/custom_objects.vendors/records/${vendorId}?locationId=${encodeURIComponent(funderLocation())}`)
+  const name = String(vendor?.record?.properties?.vendor_name ?? '')
+  if (!name) return null
+  const [work, expenses] = await Promise.all([searchByVendor('custom_objects.work_orders', vendorId), searchByVendor('custom_objects.expenses', vendorId)])
+  return {
+    name,
+    work: work.map(r => ({
+      id: r.id, title: String(r.properties.work_name ?? ''), kind: String(r.properties.kind ?? ''), stage: String(r.properties.stage ?? ''), grantId: String(r.properties.funding_source_id ?? ''), awardId: String(r.properties.award_id ?? ''),
+      from: String(r.properties.applicant_name ?? ''), amount: Number(r.properties.amount ?? 0) || 0, down: Number(r.properties.down_payment_amount ?? 0) || 0, final: Number(r.properties.final_payment_amount ?? 0) || 0,
+      neededBy: String(r.properties.needed_by ?? '').slice(0, 10), updated: String(r.properties.updated_on ?? '').slice(0, 10),
+    })),
+    payments: expenses.map(r => ({
+      id: r.id, description: String(r.properties.descriptions ?? ''), from: String(r.properties.applicant_name ?? ''), amount: Number(r.properties.amount ?? 0) || 0,
+      status: String(r.properties.status ?? ''), paidOn: String(r.properties.paid_on ?? r.properties.payment_date ?? '').slice(0, 10),
+    })),
+  }
+}

@@ -302,3 +302,11 @@ test('closing applications lists everyone not awarded and needs a tick', async (
   assert.match(evaluateLifecycleSubmit('close-applications', grant, {}, '2026-11-22', awards).error, /tick/i)
   assert.match(evaluateLifecycleSubmit('close-applications', { ...grant, listing_status: 'closed' }, { confirm: true }, '2026-11-22', awards).error, /already closed/i)
 })
+
+test('the vendor dashboard link opens one vendor only', async () => {
+  const { vendorDashboardLink, vendorDashboardValid } = await import('../lib/lifecycle-access.ts')
+  const url = new URL(vendorDashboardLink('https://x.test', 's'.repeat(40), 'v1'))
+  assert.equal(vendorDashboardValid('s'.repeat(40), 'v1', url.searchParams.get('access')), true)
+  assert.equal(vendorDashboardValid('s'.repeat(40), 'v2', url.searchParams.get('access')), false)
+  assert.equal(vendorDashboardValid('', 'v1', url.searchParams.get('access')), false)
+})

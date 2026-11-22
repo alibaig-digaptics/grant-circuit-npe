@@ -76,3 +76,17 @@ export function lifecycleLinks(origin: string, secret: string, grantId: string, 
   }
   return out as Record<LifecyclePurpose, string>
 }
+
+/** The vendor dashboard link proves the vendor got the email. It opens one vendor's work and payments. */
+export function vendorDashboardToken(secret: string, vendorId: string) {
+  return createHmac('sha256', secret).update(`vendor-dashboard|${vendorId}`).digest('hex')
+}
+
+export function vendorDashboardValid(secret: string, vendorId: string, token: string) {
+  if (!secret || !vendorId || !/^[a-f0-9]{64}$/.test(token)) return false
+  return timingSafeEqual(Buffer.from(vendorDashboardToken(secret, vendorId)), Buffer.from(token))
+}
+
+export function vendorDashboardLink(origin: string, secret: string, vendorId: string) {
+  return `${origin.replace(/\/+$/, '')}/vendor-dashboard?vendor=${encodeURIComponent(vendorId)}&access=${vendorDashboardToken(secret, vendorId)}`
+}
