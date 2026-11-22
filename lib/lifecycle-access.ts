@@ -15,12 +15,14 @@ export const LIFECYCLE_PURPOSES = {
   'proposal-request': 'proposal-request',
   'work-order': 'work-order',
   'work-update': 'vendor-work',
+  'closeout-submit': 'closeout-submit',
+  'closeout-review': 'closeout-review',
 } as const
 
 export type LifecyclePurpose = keyof typeof LIFECYCLE_PURPOSES
 
 /** These forms belong to one award, so their link is tied to the award, not the grant. */
-export const AWARD_PURPOSES: LifecyclePurpose[] = ['extension-request', 'extension-review', 'progress-report', 'submit-expense', 'proposal-request', 'work-order']
+export const AWARD_PURPOSES: LifecyclePurpose[] = ['extension-request', 'extension-review', 'progress-report', 'submit-expense', 'proposal-request', 'work-order', 'closeout-submit', 'closeout-review']
 
 /** These forms belong to one expense. */
 export const EXPENSE_PURPOSES: LifecyclePurpose[] = ['expense-review', 'expense-pay', 'expense-confirm']

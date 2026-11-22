@@ -4,7 +4,7 @@ import { NOT_REGISTERED_MESSAGE, TEAM_MEMBER_MESSAGE, isDirectSubmit, isPrimaryC
 import { EXPENSE_PURPOSES, WORK_PURPOSES, lifecycleTokenValid, purposeForSlug, scopeFor, subjectParam } from "@/lib/lifecycle-access"
 import { loadActiveVendors, loadAward, loadAwards, loadExpense, loadWork } from "@/lib/award-store"
 import { loadMilestones } from "@/lib/milestone-store"
-import { expenseConfirmError, expensePayError, expenseReviewError, expenseSubmitError, workRequestError, workUpdateError } from "@/lib/lifecycle-rules"
+import { expenseConfirmError, expensePayError, expenseReviewError, expenseSubmitError, workRequestError, workUpdateError, closeoutSubmitError, closeoutReviewError } from "@/lib/lifecycle-rules"
 import { evaluateLifecycleSubmit, todayInZone } from "@/lib/lifecycle-rules"
 import { loadGrantProps } from "@/lib/grant-record"
 import { draftLink } from "@/lib/draft-link"
@@ -32,7 +32,7 @@ async function readBody(request: Request, authorize?: (body: Record<string, unkn
     filesByField.set(key, list)
   }
   // Expense proof is checked by the rules, so it has to be uploaded first.
-  const early = new Set(["receipt", "quoteProposal", "attachments"])
+  const early = new Set(["receipt", "quoteProposal", "attachments", "documents"])
   const uploaded = new Map<string, string[]>()
   if (authorize) {
     for (const [key, list] of filesByField) {
@@ -90,6 +90,11 @@ export async function POST(
       const checked = slug === "review-expense" ? expenseReviewError(expense, body)
         : slug === "bookkeeper-pay" ? expensePayError(expense, body, today)
         : expenseConfirmError(expense, body)
+      if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
+      Object.assign(body, checked.extra)
+    } else if (slug === "closeout-submit" || slug === "closeout-review") {
+      const award = await loadAward(subject)
+      const checked = slug === "closeout-submit" ? closeoutSubmitError(award, body, todayInZone()) : closeoutReviewError(award, body)
       if (!("extra" in checked)) return NextResponse.json({ error: checked.error }, { status: checked.status })
       Object.assign(body, checked.extra)
     } else if (WORK_PURPOSES.includes(purpose)) {

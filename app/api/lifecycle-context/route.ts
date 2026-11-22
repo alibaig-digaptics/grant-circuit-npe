@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { EXPENSE_PURPOSES, WORK_PURPOSES, lifecycleTokenValid, purposeForSlug, scopeFor, subjectParam } from "@/lib/lifecycle-access"
 import { loadActiveVendors, loadAward, loadAwards, loadExpense, loadWork } from "@/lib/award-store"
 import { loadMilestones } from "@/lib/milestone-store"
-import { applicantLabel, parseApplicants, workActionsFor } from "@/lib/lifecycle-rules"
+import { applicantLabel, parseApplicants, workActionsFor, closeoutActionsFor } from "@/lib/lifecycle-rules"
 import { loadGrantProps } from "@/lib/grant-record"
 
 /** What a lifecycle form shows: the grant and the applicants it may choose from. Needs the signed link. */
@@ -25,6 +25,11 @@ export async function GET(request: Request) {
       categoryOptions: award.allowedCategories.map(c => ({ label: c.charAt(0).toUpperCase() + c.slice(1), value: c })),
       vendorOptions: [...vendors.map(v => ({ label: v.name, value: v.id })), { label: "Other (type the name below)", value: "other" }],
     })
+  }
+  if (purpose === "closeout-submit" || purpose === "closeout-review") {
+    const award = await loadAward(url.searchParams.get("award") || "")
+    if (!award) return NextResponse.json({ error: "Award not found." }, { status: 404 })
+    return NextResponse.json({ grantName: `${award.name} - ${award.grantName}`, ceiling: 0, endDate: award.endDate, requestedEnd: "", requestedReason: "", applicantOptions: [], actionOptions: closeoutActionsFor(award.closeoutStatus) })
   }
   if (purpose === "proposal-request" || purpose === "work-order") {
     const award = await loadAward(url.searchParams.get("award") || "")

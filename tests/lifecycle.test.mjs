@@ -275,3 +275,19 @@ test('work links are tied to the work', async () => {
   assert.equal(lifecycleTokenValid('s'.repeat(40), 'work-update', 'w2', url.searchParams.get('access')), false)
   assert.ok(links['work-order'] && links['proposal-request'])
 })
+
+test('closeout: only the awardee, once closing prep has started, with documents, and only once', async () => {
+  const { closeoutSubmitError, closeoutReviewError, closeoutActionsFor } = await import('../lib/lifecycle-rules.ts')
+  const a = award({ status: 'active', closingNotice: '2026-12-01', closeoutStatus: '', grantName: 'G' })
+  const body = { email: 'sam@x.org', documents: ['https://x/doc.pdf'] }
+  assert.equal(closeoutSubmitError(a, body, '2026-12-02').error, null)
+  assert.equal(closeoutSubmitError(a, { ...body, email: 'ivy@x.org' }, '2026-12-02').status, 403)
+  assert.match(closeoutSubmitError(a, { ...body, documents: [] }, '2026-12-02').error, /attach/i)
+  assert.match(closeoutSubmitError({ ...a, closingNotice: '' }, body, '2026-12-02').error, /one month/i)
+  assert.match(closeoutSubmitError({ ...a, closeoutStatus: 'submitted' }, body, '2026-12-02').error, /already/i)
+  assert.deepEqual(closeoutActionsFor('submitted').map(x => x.value), ['start_review', 'ask_more'])
+  assert.deepEqual(closeoutActionsFor('in_review').map(x => x.value), ['approve_close', 'ask_more'])
+  assert.equal(closeoutReviewError({ ...a, closeoutStatus: 'submitted' }, { action: 'start_review' }).extra.actionKey, 'start_review')
+  assert.match(closeoutReviewError({ ...a, closeoutStatus: 'submitted' }, { action: 'approve_close' }).error, /not available/i)
+  assert.match(closeoutReviewError({ ...a, closeoutStatus: 'submitted' }, { action: 'ask_more' }).error, /missing/i)
+})

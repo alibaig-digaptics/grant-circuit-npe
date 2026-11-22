@@ -110,6 +110,9 @@ export type Award = {
   allowedCategories: string[]
   remaining: number
   grantId: string
+  closeoutStatus: string
+  closingNotice: string
+  grantName: string
 }
 export type SubmitResult = { error: string; status: number } | { error: null; extra: Record<string, unknown> }
 
@@ -134,6 +137,9 @@ export function awardFromRecord(record: { id: string; properties: Record<string,
     allowedCategories: parseCategories(p.allowed_budget_categories),
     remaining: number(p.remaining_balance),
     grantId: text(p.grant_id),
+    closeoutStatus: text(p.closeout_status),
+    closingNotice: text(p.closing_notice_end_date).slice(0, 10),
+    grantName: text(p.grant_name),
   }
 }
 
@@ -447,5 +453,46 @@ export function workUpdateError(work: WorkItem | null, body: Record<string, unkn
       vendorId: work.vendorId, vendorName: work.vendorName, vendorEmail: work.vendorEmail, vendorContactId: work.vendorContactId,
       applicantId: work.applicantId, applicantEmail: work.applicantEmail, applicantName: work.applicantName, awardId: work.awardId, grantId: work.grantId, title: work.title, kind: work.kind,
     },
+  }
+}
+
+
+// ---------- Closeout ----------
+export const CLOSEOUT_ACTIONS: Record<string, { label: string; from: string[] }> = {
+  start_review: { label: 'Start the review', from: ['submitted'] },
+  approve_close: { label: 'Approve and close the grant', from: ['in_review'] },
+  ask_more: { label: 'Ask for more documents', from: ['submitted', 'in_review'] },
+}
+
+export function closeoutActionsFor(status: string) {
+  return Object.entries(CLOSEOUT_ACTIONS).filter(([, a]) => a.from.includes(status)).map(([value, a]) => ({ value, label: a.label }))
+}
+
+/** The seeker hands in closeout documents once closing prep has started. */
+export function closeoutSubmitError(award: Award | null, body: Record<string, unknown>, today: string): { error: string; status: number } | { error: null; extra: Record<string, unknown> } {
+  const bad = (error: string, status = 400) => ({ error, status })
+  if (!award || award.status === 'cancelled') return bad('We could not find your award for this grant.', 403)
+  if (text(body.email).toLowerCase() !== award.email) return bad('Only the seeker who was awarded this grant can send closeout documents.', 403)
+  if (award.status !== 'active') return bad('Closeout documents are accepted while the grant is active.')
+  if (!award.closingNotice) return bad('Closeout opens one month before the end date.')
+  if (['submitted', 'in_review'].includes(award.closeoutStatus)) return bad('Your closeout documents are already with our team.')
+  const files = Array.isArray(body.documents) ? body.documents.map(text).filter(Boolean) : []
+  if (!files.length) return bad('Attach your closeout documents.')
+  return {
+    error: null,
+    extra: { awardId: award.id, grantId: award.grantId, grantName: award.grantName, applicantId: award.applicantId, applicantEmail: award.email, applicantName: award.name, applicantOrganization: award.organization, documentUrls: files, today },
+  }
+}
+
+export function closeoutReviewError(award: Award | null, body: Record<string, unknown>): { error: string; status: number } | { error: null; extra: Record<string, unknown> } {
+  const bad = (error: string, status = 400) => ({ error, status })
+  if (!award) return bad('We could not find this award.', 403)
+  const key = text(body.action)
+  const action = CLOSEOUT_ACTIONS[key]
+  if (!action || !action.from.includes(award.closeoutStatus)) return bad('That step is not available right now.')
+  if (key === 'ask_more' && !text(body.notes)) return bad('Tell the seeker what is missing.')
+  return {
+    error: null,
+    extra: { awardId: award.id, grantId: award.grantId, grantName: award.grantName, actionKey: key, applicantId: award.applicantId, applicantEmail: award.email, applicantName: award.name, applicantOrganization: award.organization },
   }
 }

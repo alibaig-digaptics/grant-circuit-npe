@@ -221,7 +221,7 @@ export function GrantForm({
           if (form.slug === "submit-expense" && field.name === "milestone") return { ...field, options: lifecycleContext.data?.milestoneOptions ?? [] }
           if (form.slug === "submit-expense" && field.name === "budgetCategory") return { ...field, options: lifecycleContext.data?.categoryOptions ?? [] }
           if ((form.slug === "proposal-request" || form.slug === "work-order") && field.name === "vendor") return { ...field, options: lifecycleContext.data?.vendorOptions ?? [] }
-          if (form.slug === "vendor-work" && field.name === "action") return { ...field, options: lifecycleContext.data?.actionOptions ?? [] }
+          if ((form.slug === "vendor-work" || form.slug === "closeout-review") && field.name === "action") return { ...field, options: lifecycleContext.data?.actionOptions ?? [] }
           if (form.slug === "submit-expense" && field.name === "vendor") return { ...field, options: lifecycleContext.data?.vendorOptions ?? [] }
           if (!LOOKUP_FIELD_NAMES.includes(field.name as (typeof LOOKUP_FIELD_NAMES)[number])) {
             return field

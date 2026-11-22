@@ -2073,5 +2073,80 @@
         }
       ]
     }
+  ],
+  "closeout-submit": [
+    {
+      "title": "Closeout - Who",
+      "fields": [
+        {
+          "name": "firstName",
+          "label": "First Name",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "lastName",
+          "label": "Last Name",
+          "type": "text",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "email",
+          "label": "Your email",
+          "type": "email",
+          "required": true,
+          "options": [],
+          "multiple": false
+        }
+      ]
+    },
+    {
+      "title": "Closeout - Documents",
+      "fields": [
+        {
+          "name": "documents",
+          "label": "Closeout documents",
+          "type": "file",
+          "required": true,
+          "options": [],
+          "multiple": true
+        },
+        {
+          "name": "notes",
+          "label": "Note for our team (optional)",
+          "type": "textarea",
+          "required": false,
+          "options": [],
+          "multiple": false
+        }
+      ]
+    }
+  ],
+  "closeout-review": [
+    {
+      "title": "Closeout Review - Step",
+      "fields": [
+        {
+          "name": "action",
+          "label": "What do you want to do",
+          "type": "dropdown",
+          "required": true,
+          "options": [],
+          "multiple": false
+        },
+        {
+          "name": "notes",
+          "label": "Note for the seeker (required when asking for more)",
+          "type": "textarea",
+          "required": false,
+          "options": [],
+          "multiple": false
+        }
+      ]
+    }
   ]
 }
