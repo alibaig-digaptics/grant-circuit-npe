@@ -2,6 +2,19 @@
 export type Milestone = { name: string; description: string; timing: string }
 
 export const MAX_MILESTONES = 30
+
+/** Relative timing, never a calendar date, because the award date is unknown. */
+export const TIMING_OPTIONS = [
+  'First month',
+  'First 3 months',
+  'Months 4 to 6',
+  'First 6 months',
+  'Months 7 to 12',
+  'Next 6 months',
+  'First 12 months',
+  'Second year',
+  'End of the grant',
+]
 const NAME_LIMIT = 200
 const DESCRIPTION_LIMIT = 2000
 const TIMING_LIMIT = 120
