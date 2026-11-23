@@ -943,8 +943,30 @@ function buttonLabel(slug: string, values: FormValues) {
   if (slug === "grant-applicant-submit" && /save|later/i.test(mode)) {
     return "Save for later"
   }
-  if (slug === "grant-rfp") return "Create Grant"
-  return "Submit Application"
+  const LABELS: Record<string, string> = {
+    "grant-rfp": "Create Grant",
+    "submit-expense": "Submit Expense",
+    "review-expense": "Send Decision",
+    "bookkeeper-pay": "Record Payment",
+    "confirm-payment": "Confirm Payment Received",
+    "proposal-request": "Send Proposal Request",
+    "work-order": "Send Work Order",
+    "vendor-work": "Update Work",
+    "closeout-submit": "Submit Closeout Documents",
+    "closeout-review": "Send Closeout Decision",
+    "close-applications": "Close Applications",
+    "apply-extension": "Request Extension",
+    "extension-review": "Send Decision",
+    "progress-report": "Submit Progress Report",
+    "grant-mark-awarded": "Forward to Funder",
+    "grant-funder-auto-review": "Send Selection",
+    "grant-management-requirements": "Award Grant",
+    "org-registration": "Submit Registration",
+    "funder-registration": "Submit Application",
+    "vendor-application": "Submit Application",
+    "vendor-w9": "Upload W-9",
+  }
+  return LABELS[slug] || "Submit Application"
 }
 
 function FormControl({
