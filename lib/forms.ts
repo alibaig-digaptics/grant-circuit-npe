@@ -353,3 +353,15 @@ export function normalizePhone(value: unknown): string {
 }
 
 export const PHONE_FIELDS = ['phone', 'orgPhone', 'vendorPhone', 'contactPhone']
+
+
+/** The decision email goes through the shared branded template in n8n. */
+export async function sendDecisionEmail(input: { kind: 'funder' | 'seeker' | 'vendor'; decision: 'approve' | 'reject' | 'changes'; email: string; orgName: string; message: string }) {
+  const base = (process.env.N8N_BASE_URL || 'https://360growth.io').replace(/\/+$/, '')
+  const res = await fetch(`${base}/webhook/gc-decision-email-npe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(input),
+  })
+  return res.ok
+}

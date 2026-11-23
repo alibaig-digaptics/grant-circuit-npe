@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { reviewMessageForEmail } from '@/lib/funder-review'
-import { getForm, webhookUrl } from '@/lib/forms'
+import { getForm, sendDecisionEmail, webhookUrl } from '@/lib/forms'
 import { PARTIES, partyKind, partyReviewAllowed } from '@/lib/signup-review'
 import { partyRecord } from '@/lib/signup-review-record'
 
@@ -42,6 +42,8 @@ export async function POST(request: Request) {
       }),
     })
     if (!res.ok) return redirect(`${decision.result}-notify-failed`)
+    const sent = await sendDecisionEmail({ kind, decision: decision.value === 'accept' ? 'approve' : decision.value === 'reject' ? 'reject' : 'changes', email: String(record.properties.email || ''), orgName: String(record.properties[party.nameField] || ''), message }).catch(() => false)
+    if (!sent) return redirect(`${decision.result}-notify-failed`)
     return redirect(decision.result)
   } catch { return redirect('failed') }
 }

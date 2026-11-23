@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto'
 import { NextResponse } from 'next/server'
+import { sendDecisionEmail } from '@/lib/forms'
 import { createGrantLink, funderContact, funderGhl, funderLocation, funderRecordRequest, reviewAllowed, reviewMessageForEmail, reviewState } from '@/lib/funder-review'
 
 export async function POST(request: Request) {
@@ -43,8 +44,8 @@ export async function POST(request: Request) {
     if (updated?.properties.approval_status !== state.approval_status) return redirect('failed')
     if (state.approval_status === 'rejected') await moveToRejected(contact.id).catch(() => null)
     try {
-      const enrolled = await funderGhl(endpoint + '/tags', { method: 'POST', body: JSON.stringify(tag) })
-      if (enrolled?.tags?.includes(tag.tags[0])) return redirect(state.approval_status)
+      const sent = await sendDecisionEmail({ kind: 'funder', decision: state.approval_status === 'approved' ? 'approve' : 'reject', email: String(record.properties.email || contact.email || ''), orgName: String(record.properties.organization_name || ''), message })
+      if (sent) return redirect(state.approval_status)
     } catch { /* the decision is already saved; do not claim the email was queued */ }
     return redirect(`${state.approval_status}-notify-failed`)
   } catch { return redirect('failed') }
