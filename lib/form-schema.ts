@@ -53,6 +53,9 @@ const BUDGET_CATEGORY_OPTIONS = ["personnel", "events", "supplies", "travel", "m
 const YES_NO = [{ label: "Yes", value: "yes" }, { label: "No", value: "no" }]
 const OPTIONS: Record<string, (string | { label: string; value: string })[]> = {
   status501c3: YES_NO,
+  costShareRequired: YES_NO,
+  carryoverAllowed: YES_NO,
+  preawardCosts: YES_NO,
   samRegistered: YES_NO,
   required1099: YES_NO,
   certificationStatus: YES_NO,
