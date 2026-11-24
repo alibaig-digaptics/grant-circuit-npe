@@ -1,3 +1,4 @@
+import { loadMilestones } from "@/lib/milestone-store"
 import { NextResponse } from "next/server"
 import { loadLookups } from "@/lib/ghl-lookups"
 
@@ -208,6 +209,7 @@ export async function GET(request: Request) {
       const reqDocs: string[] = []
       const closingDocs: string[] = []
       let proposalSummary = ""
+      let milestoneList: { name: string; description: string; timing: string }[] = []
       let applicantOrg = ""
       const proposalFiles: string[] = []
       let contactExtensionRequestedEndDate = ""
@@ -273,6 +275,8 @@ export async function GET(request: Request) {
             contact?: { customFields?: { id?: string; key?: string; value?: unknown }[]; companyName?: string }
           }
           const cfs = cData.contact?.customFields || []
+          const applicantEmail = String((cData.contact as { email?: string } | undefined)?.email || '')
+          if (applicantEmail) milestoneList = await loadMilestones(applicantEmail, recordId).catch(() => [])
           const defsRes = await fetch(
             `${GHL}/locations/${locationId}/customFields?model=contact`,
             {
@@ -348,6 +352,7 @@ export async function GET(request: Request) {
         requirementDocs: reqDocs,
         closingDocs: closingDocs,
         proposalSummary,
+        milestones: milestoneList,
         applicantOrg,
         proposalFiles,
         notes: notesStr,

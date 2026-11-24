@@ -174,6 +174,7 @@ export function GrantForm({
         summary?: string
         requirementDocs?: string[]
         proposalSummary?: string
+        milestones?: { name: string; description: string; timing: string }[]
         applicantOrg?: string
         proposalFiles?: string[]
         notes?: string
@@ -334,6 +335,7 @@ export function GrantForm({
       requirementDocs?: string[]
       closingDocs?: string[]
       proposalSummary?: string
+      milestones?: { name: string; description: string; timing: string }[]
       applicantOrg?: string
       proposalFiles?: string[]
       notes?: string
@@ -615,6 +617,22 @@ export function GrantForm({
               <span>{rd.proposalSummary}</span>
             </div>
           ) : null}
+          {showApplicantPackage && rd?.milestones && rd.milestones.length > 0 ? (
+            <div className="pt-1 text-xs text-muted-foreground leading-relaxed">
+              <span className="font-semibold text-foreground mb-1.5 block">Milestones:</span>
+              <ol className="flex flex-col gap-1.5">
+                {rd.milestones.map((m, i) => (
+                  <li key={i} className="rounded-lg border border-border/60 bg-background p-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium text-foreground">{i + 1}. {m.name}</span>
+                      {m.timing ? <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 font-semibold text-primary">{m.timing}</span> : null}
+                    </div>
+                    {m.description ? <p className="mt-1">{m.description}</p> : null}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ) : null}
           {showApplicantPackage ? (
             <div className="pt-1 text-xs text-muted-foreground leading-relaxed">
               <span className="font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
@@ -664,7 +682,8 @@ export function GrantForm({
                 Required Documents & Guidelines (from Funder):
               </span>
               <div className="flex flex-col gap-1.5">
-                {rd.requirementDocs.map((doc, idx) => {
+                {rd.requirementDocs.filter((d) => /^https?:\/\//.test(d)).length === 0 ? <p>{rd.requirementDocs.join(" ")}</p> : null}
+                {rd.requirementDocs.filter((d) => /^https?:\/\//.test(d)).map((doc, idx) => {
                   const isUrl = doc.startsWith("http://") || doc.startsWith("https://")
                   const filename = isUrl ? (doc.split("/").pop() || `Document ${idx + 1}`) : doc
                   return (
